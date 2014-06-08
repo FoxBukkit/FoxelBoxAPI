@@ -12,26 +12,30 @@ class APIController extends \Controller {
         if(empty($session_data) || sha1($session_data[1]) != $session_data[0])
             $this->makeError('Tampered data', true);
         $this->session_data = unserialize($session_data[1]);
-        if($this->session_data->time - time() > 600)
+        if($this->session_data['time'] - time() > 600)
             $this->makeError('Session outdated', true);
-        $this->user = \User::get($this->session_data->user_id);
+        $this->user = \User::find($this->session_data['user_id']);
         if(empty($this->user))
-            $this->makeError('Not logged in', true);
+            $this->makeError('Not logged in');
+        if(!$this->user->getUUID())
+            $this->makeError('No UUID');
     }
 
     protected function generateSessionData() {
         $data = serialize(array(
-            'user_id' => $this->user->id,
+            'user_id' => $this->user->user_id,
             'time' => time()
         ));
+
+        \UserTracker::addUser($this->user->getUUID());
 
         $this->session_data = base64_encode(\Crypt::encrypt(sha1($data).'|'.$data));
 
         return $this->session_data;
     }
 
-    protected function makeSuccess($result) {
-        die(json_encode(array('success' => true, 'session_id' => $this->generateSessionData(), 'result' => $result)));
+    protected function makeSuccess($result, $add_session_id = true) {
+        die(json_encode(array('success' => true, 'session_id' => $add_session_id ? $this->generateSessionData() : '', 'result' => $result)));
     }
 
     protected function makeError($message, $retry = false) {

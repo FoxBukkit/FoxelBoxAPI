@@ -11,10 +11,18 @@ class LoginController extends APIController {
             $this->makeError('User not found');
         if(!$user->checkPassword($password))
             $this->makeError('Password wrong');
+        if(!$user->getUUID())
+            $this->makeError('No UUID');
 
         $this->user = $user;
         $this->generateSessionData();
         $this->makeSuccess(array('ok' => true));
+    }
+
+    public function logoutAction() {
+        $this->requireLoggedIn();
+        \UserTracker::removeUser($this->user->getUUID());
+        $this->makeSuccess(array('ok' => true), false);
     }
 
     public function verifyAction() {

@@ -20,6 +20,10 @@ Route::group(
     array('prefix' => 'v1'),
     function() {
         Route::post('login/auth', 'APIv1\LoginController@authAction');
+        Route::post('login/logout', 'APIv1\LoginController@logoutAction');
         Route::post('login/verify', 'APIv1\LoginController@verifyAction');
+
+        Route::post('message/send', 'APIv1\MessageController@sendAction');
+        Route::post('message/poll', 'APIv1\MessageController@pollAction');
     }
 );

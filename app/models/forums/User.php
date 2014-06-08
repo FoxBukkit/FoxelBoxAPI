@@ -6,14 +6,11 @@ class User extends Eloquent {
     protected $table = 'xf_user';
     protected $primaryKey = 'user_id';
 
-    private function xenForoHash($hashFunc, $data) {
-        switch ($hashFunc) {
-            case 'sha256':
-            default:
-                return hash('sha256', $data);
-            case 'sha1':
-                return sha1($data);
-        }
+    public function getUUID() {
+        $field = UserField::where('user_id', $this->user_id)->where('field_id', 'minecraft_uuid')->first();
+        if(empty($field) || empty($field->field_value))
+            return null;
+        return $field->field_value;
     }
 
     public function checkPassword($password) {
@@ -29,9 +26,19 @@ class User extends Eloquent {
                 return $passwordHash->CheckPassword($password, $authData['hash']);
             case 'XenForo_Authentication_Core':
                 $hashFunc = $authData['hashFunc'];
-                return $this->xenForoHash($hashFunc, ($this->xenForoHash($hashFunc, $password) . $authData['salt'])) === $hashFunc['hash'];
+                return $this->__xenForoHash($hashFunc, ($this->__xenForoHash($hashFunc, $password) . $authData['salt'])) === $hashFunc['hash'];
             default:
                 return false;
+        }
+    }
+
+    private function __xenForoHash($hashFunc, $data) {
+        switch ($hashFunc) {
+            case 'sha256':
+            default:
+                return hash('sha256', $data);
+            case 'sha1':
+                return sha1($data);
         }
     }
 }
