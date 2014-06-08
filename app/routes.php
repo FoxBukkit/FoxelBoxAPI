@@ -19,6 +19,7 @@ Route::get('/', function()
 Route::group(
     array('prefix' => 'v1'),
     function() {
-        Route::post('login', 'APIv1\LoginController@indexAction');
+        Route::post('login/auth', 'APIv1\LoginController@authAction');
+        Route::post('login/verify', 'APIv1\LoginController@verifyAction');
     }
 );

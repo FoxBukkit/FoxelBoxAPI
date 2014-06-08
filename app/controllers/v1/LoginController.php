@@ -2,7 +2,7 @@
 namespace APIv1;
 
 class LoginController extends APIController {
-    public function indexAction() {
+    public function authAction() {
         $username = \Input::get('username');
         $password = \Input::get('password');
 
@@ -12,8 +12,13 @@ class LoginController extends APIController {
         if(!$user->checkPassword($password))
             $this->makeError('Password wrong');
 
+        $this->user = $user;
+        $this->generateSessionData();
+        $this->makeSuccess(array('ok' => true));
+    }
 
-
-        $this->makeSuccess(array('session_id' => \Session::getId()));
+    public function verifyAction() {
+        $this->requireLoggedIn();
+        $this->makeSuccess(array('ok' => true));
     }
 }
