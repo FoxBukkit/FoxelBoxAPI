@@ -15,3 +15,10 @@ Route::get('/', function()
 {
 	return View::make('apiinfo');
 });
+
+Route::group(
+    array('prefix' => 'v1'),
+    function() {
+        Route::post('login', 'APIv1\LoginController@indexAction');
+    }
+);
