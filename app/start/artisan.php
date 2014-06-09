@@ -11,3 +11,5 @@
 |
 */
 
+Artisan::add(new ChatDaemon());
+Artisan::add(new ChatCron());

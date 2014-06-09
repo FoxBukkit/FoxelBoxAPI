@@ -13,6 +13,10 @@ class User extends Eloquent {
         return $field->field_value;
     }
 
+    public function hasPermission($permissions) {
+        return false;
+    }
+
     public function checkPassword($password) {
         $auth = UserAuthentication::where('user_id', $this->user_id)->where('scheme_class', '!=', 'XenForo_Authentication_NoPassword')->first();
         if(empty($auth))

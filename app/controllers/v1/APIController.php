@@ -8,13 +8,11 @@ class APIController extends \Controller {
     protected function requireLoggedIn() {
         if(!\Input::has('session_id'))
             $this->makeError('Missing session_id');
-        $session_data = explode('|', \Crypt::decrypt(base64_decode(\Input::get('session_id'))), 2);
-        if(empty($session_data) || sha1($session_data[1]) != $session_data[0])
-            $this->makeError('Tampered data', true);
-        $this->session_data = unserialize($session_data[1]);
-        if($this->session_data['time'] - time() > 600)
+        $this->session_data = \Input::get('session_id');
+        $session_decrypted = \Crypt::decrypt(\Input::get('session_id'));
+        if($session_decrypted['time'] - time() > 600)
             $this->makeError('Session outdated', true);
-        $this->user = \User::find($this->session_data['user_id']);
+        $this->user = \User::find($session_decrypted['user_id']);
         if(empty($this->user))
             $this->makeError('Not logged in');
         if(!$this->user->getUUID())
@@ -22,14 +20,14 @@ class APIController extends \Controller {
     }
 
     protected function generateSessionData() {
-        $data = serialize(array(
+        $data = array(
             'user_id' => $this->user->user_id,
             'time' => time()
-        ));
+        );
 
         \UserTracker::addUser($this->user->getUUID());
 
-        $this->session_data = base64_encode(\Crypt::encrypt(sha1($data).'|'.$data));
+        $this->session_data = \Crypt::encrypt($data);
 
         return $this->session_data;
     }
