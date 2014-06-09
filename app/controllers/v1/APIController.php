@@ -2,6 +2,9 @@
 namespace APIv1;
 
 class APIController extends \Controller {
+    /**
+     * @var \User
+     */
     protected $user;
     protected $session_data;
 

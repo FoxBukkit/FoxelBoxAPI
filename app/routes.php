@@ -25,5 +25,7 @@ Route::group(
 
         Route::post('message/send', 'APIv1\MessageController@sendAction');
         Route::post('message/poll', 'APIv1\MessageController@pollAction');
+
+        Route::post('profile', 'APIv1\ProfileController@indexAction');
     }
 );

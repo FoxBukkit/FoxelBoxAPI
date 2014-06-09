@@ -6,11 +6,48 @@ class User extends Eloquent {
     protected $table = 'xf_user';
     protected $primaryKey = 'user_id';
 
+    private $_uuid;
+
     public function getUUID() {
+        if($this->_uuid)
+            return $this->_uuid;
         $field = UserField::where('user_id', $this->user_id)->where('field_id', 'minecraft_uuid')->first();
         if(empty($field) || empty($field->field_value))
             return null;
-        return $field->field_value;
+        $this->_uuid = $field->field_value;
+        return $this->_uuid;
+    }
+
+    public function getRank() {
+        return Redis::connection()->hget('playergroups', $this->getUUID());
+    }
+
+    public function getLevel() {
+        return Redis::connection()->hget('ranklevels', $this->getRank());
+    }
+
+    public function getName() {
+        return Redis::connection()->hget('playerUUIDToName', $this->getUUID());
+    }
+
+    public function getFullNickAndTag() {
+        $redis = Redis::connection();
+        $nick = $redis->hget('playernicks', $this->getUUID());
+        if(empty($nick))
+            $nick = $this->getName();
+        $tag = '';
+        $tagAdd = $redis->hget('playerTags', $this->getUUID());
+        if(!empty($tagAdd))
+            $tag .= $tagAdd . ' ';
+        $tagAdd = $redis->hget('playerRankTags', $this->getUUID());
+        if(!empty($tagAdd))
+            $tag .= $tagAdd;
+        else {
+            $tagAdd = $redis->hget('ranktags', $this->getRank());
+            if(!empty($tagAdd))
+                $tag .= $tagAdd;
+        }
+        return $tag . $nick;
     }
 
     public function hasPermission($permissions) {
