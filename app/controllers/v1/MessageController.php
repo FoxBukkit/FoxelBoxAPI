@@ -9,7 +9,6 @@ class MessageController extends APIController {
         $redis = \RedisL4::connection();
 
         $messages = array();
-        $time = microtime(true);
         
         $found = !\Input::has('longpoll');
         $waited = 0;
@@ -32,6 +31,8 @@ class MessageController extends APIController {
                 break;
             sleep(1);
         }
+
+        $time = microtime(true);
 
         $this->makeSuccess(array('time' => $time, 'messages' => $messages));
     }
