@@ -22,8 +22,12 @@ class User extends Eloquent {
         return RedisL4::connection()->hget('playergroups', $this->getUUID());
     }
 
+    private static function getRankLevel($rank) {
+        return RedisL4::connection()->hget('ranklevels', $rank);
+    }
+
     public function getLevel() {
-        return RedisL4::connection()->hget('ranklevels', $this->getRank());
+        return self::getRankLevel($this->getRank());
     }
 
     public function getName() {
@@ -51,6 +55,8 @@ class User extends Eloquent {
     }
 
     public function hasPermission($permissions) {
+        if(in_array('foxbukkit.opchat', $permissions))
+            return $this->getLevel() >= self::getRankLevel('op');
         return false;
     }
 
