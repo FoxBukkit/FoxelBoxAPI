@@ -41,7 +41,7 @@ class ChatCron extends Command {
 
         $redis = RedisL4::connection();
         $time = microtime(true) - 60;
-        foreach($redis->lrange('apiMessageCache', 0, -51) AS $value)
+        foreach($redis->lrange('apiMessageCache', 50, -1) AS $value)
             if(json_decode($value)->time < $time)
                 $redis->lrem('apiMessageCache', 1, $value);
 	}
