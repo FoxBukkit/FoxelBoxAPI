@@ -41,7 +41,13 @@ class MessageController extends APIController {
         $this->requireLoggedIn();
         $redis = \RedisL4::connection();
         $uuid = $this->user->getUUID();
-        $redis->publish('foxbukkit:from_server', 'Chat|' . $uuid . '|' . $redis->hget('playerUUIDToName', $uuid) . '|' . \Input::get('message'));
+        $message = \Input::get('message');
+        if($message{0} == "\u0123")
+            $message = substr($message, 1);
+        $message = str_replace("\r", '', $message);
+        $message = str_replace("\n", '', $message);
+        $message = str_replace("\t", '', $message);
+        $redis->publish('foxbukkit:from_server', 'Chat|' . $uuid . '|' . $redis->hget('playerUUIDToName', $uuid) . '|' . $message);
         $this->makeSuccess(array('ok' => true));
     }
 } 
