@@ -56,8 +56,7 @@ class User extends Eloquent {
 
     public function hasPermission($permissions) {
         if(in_array('foxbukkit.opchat', $permissions))
-            return true;
-            //return $this->getLevel() >= self::getRankLevel('op');
+            return $this->getLevel() >= self::getRankLevel('op');
         return false;
     }
 

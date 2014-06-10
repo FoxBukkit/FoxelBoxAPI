@@ -6,8 +6,9 @@ class ProfileController extends APIController {
         $this->requireLoggedIn();
         $this->makeSuccess(array(
             'Pretty name' => $this->user->getFullNickAndTag(),
+            'Name' => $this->user->getName(),
             'Rank' => $this->user->getRank(),
-            'Name' => $this->user->getName()
+            'Level' => $this->user->getLevel(),
         ));
     }
 } 
