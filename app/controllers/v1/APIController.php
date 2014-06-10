@@ -10,7 +10,7 @@ class APIController extends \Controller {
 
     protected function requireLoggedIn() {
         if(!\Input::has('session_id'))
-            $this->makeError('Missing session_id');
+            $this->makeError('Missing session_id', true);
         $this->session_data = \Input::get('session_id');
         $session_decrypted = \Crypt::decrypt(\Input::get('session_id'));
         if($session_decrypted['time'] - time() > 600)
