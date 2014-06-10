@@ -16,7 +16,6 @@ class UserTracker {
         $redis = RedisL4::connection();
         $time = time();
         $changes = $force ? 1 : 0;
-        $redis->del('playersOnline:Chat');
 
         $trakcedUsers = $redis->hgetall('apiUserTracker');
 
@@ -25,8 +24,10 @@ class UserTracker {
                 if(((int)$value) < $time)
                     $changes += $redis->hdel('apiUserTracker', $key);
 
-        if($changes > 0)
+        if($changes > 0) {
+            $redis->del('playersOnline:Chat');
             foreach($trakcedUsers AS $key => $value)
                 $redis->lpush('playersOnline:Chat', $key);
+        }
     }
 }
