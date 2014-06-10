@@ -5,7 +5,7 @@ class MessageController extends APIController {
     public function pollAction() {
         $this->requireLoggedIn();
 
-        $since = (float)\Input::get('since');
+        $since = \Input::get('since');
         $redis = \RedisL4::connection();
 
         $messages = array();
@@ -14,6 +14,8 @@ class MessageController extends APIController {
         $waited = 0;
 
         $uuid = $this->user->getUUID();
+
+        $maxTime = $since;
 
         while(true) {
             foreach($redis->lrange('apiMessageCache', 0, -1) AS $value) {
@@ -25,6 +27,8 @@ class MessageController extends APIController {
                             $messages[] = $data;
                             $found = true;
                     }
+                    if($data->time > $maxTime)
+                        $maxTime = $data->time;
                 }
             }
             if($found || ++$waited > 20)
@@ -32,9 +36,7 @@ class MessageController extends APIController {
             sleep(1);
         }
 
-        $time = microtime(true);
-
-        $this->makeSuccess(array('time' => $time, 'messages' => $messages));
+        $this->makeSuccess(array('time' => $maxTime, 'messages' => $messages));
     }
 
     public function sendAction() {
