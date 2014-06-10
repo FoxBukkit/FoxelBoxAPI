@@ -39,7 +39,7 @@ class ChatCron extends Command {
 	{
 		UserTracker::refreshList(false, true);
 
-        $redis = Redis::connection();
+        $redis = RedisL4::connection();
         $time = microtime(true) - 60;
         foreach($redis->lrange('apiMessageCache', 0, -1) AS $value)
             if(json_decode($value)->time < $time)

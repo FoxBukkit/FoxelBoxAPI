@@ -37,8 +37,8 @@ class ChatDaemon extends Command {
 	 */
 	public function fire()
 	{
-        $redis = Redis::connection();
-        $pubSub = Redis::connection('pubsub')->pubSub();
+        $redis = RedisL4::connection();
+        $pubSub = RedisL4::connection('pubsub')->pubSub();
         $pubSub->subscribe('foxbukkit:to_server');
         foreach($pubSub AS $message) {
             if($message->kind != 'message')

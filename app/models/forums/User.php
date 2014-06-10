@@ -19,19 +19,19 @@ class User extends Eloquent {
     }
 
     public function getRank() {
-        return Redis::connection()->hget('playergroups', $this->getUUID());
+        return RedisL4::connection()->hget('playergroups', $this->getUUID());
     }
 
     public function getLevel() {
-        return Redis::connection()->hget('ranklevels', $this->getRank());
+        return RedisL4::connection()->hget('ranklevels', $this->getRank());
     }
 
     public function getName() {
-        return Redis::connection()->hget('playerUUIDToName', $this->getUUID());
+        return RedisL4::connection()->hget('playerUUIDToName', $this->getUUID());
     }
 
     public function getFullNickAndTag() {
-        $redis = Redis::connection();
+        $redis = RedisL4::connection();
         $nick = $redis->hget('playernicks', $this->getUUID());
         if(empty($nick))
             $nick = $this->getName();

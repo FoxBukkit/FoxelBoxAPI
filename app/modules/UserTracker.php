@@ -1,19 +1,19 @@
 <?php
 class UserTracker {
     public static function removeUser($uuid) {
-        $redis = Redis::connection();
+        $redis = RedisL4::connection();
         if($redis->hdel('apiUserTracker', $uuid) > 0)
             self::refreshList(true);
     }
 
     public static function addUser($uuid) {
-        $redis = Redis::connection();
+        $redis = RedisL4::connection();
         if($redis->hset('apiUserTracker', $uuid, time() + 60) > 0)
             self::refreshList(true);
     }
 
     public static function refreshList($force = false, $cleanup = false) {
-        $redis = Redis::connection();
+        $redis = RedisL4::connection();
         $time = time();
         $changes = $force ? 1 : 0;
         $redis->del('playersOnline:Chat');

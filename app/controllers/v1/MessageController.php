@@ -6,7 +6,7 @@ class MessageController extends APIController {
         $this->requireLoggedIn();
 
         $since = (float)\Input::get('since');
-        $redis = \Redis::connection();
+        $redis = \RedisL4::connection();
 
         $messages = array();
         $time = microtime(true);
@@ -38,7 +38,7 @@ class MessageController extends APIController {
 
     public function sendAction() {
         $this->requireLoggedIn();
-        $redis = \Redis::connection();
+        $redis = \RedisL4::connection();
         $uuid = $this->user->getUUID();
         $redis->publish('foxbukkit:from_server', 'Chat|' . $uuid . '|' . $redis->hget('playerUUIDToName', $uuid) . '|' . \Input::get('message'));
         $this->makeSuccess(array('ok' => true));
