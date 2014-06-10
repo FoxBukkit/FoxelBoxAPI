@@ -10,7 +10,9 @@ class MessageController extends APIController {
 
         $messages = array();
         $time = microtime(true);
+        
         $found = !\Input::has('longpoll');
+        $waited = 0;
 
         $uuid = $this->user->getUUID();
 
@@ -26,7 +28,7 @@ class MessageController extends APIController {
                     }
                 }
             }
-            if($found)
+            if($found || ++$waited > 20)
                 break;
             sleep(1);
         }
