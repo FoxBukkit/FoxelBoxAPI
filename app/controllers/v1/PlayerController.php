@@ -18,6 +18,7 @@ class PlayerController extends APIController {
             }
             $ret[$server] = $list;
         }
+        $this->makeSuccess($ret);
     }
 
     public function infoAction() {
