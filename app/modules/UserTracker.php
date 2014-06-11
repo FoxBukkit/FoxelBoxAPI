@@ -17,16 +17,17 @@ class UserTracker {
         $time = time();
         $changes = $force ? 1 : 0;
 
-        $trakcedUsers = $redis->hgetall('apiUserTracker');
-
-        if($cleanup)
-            foreach($trakcedUsers AS $key => $value)
+        if($cleanup) {
+            $trackedUsers = $redis->hgetall('apiUserTracker');
+            foreach($trackedUsers AS $key => $value)
                 if(((int)$value) < $time)
                     $changes += $redis->hdel('apiUserTracker', $key);
+        }
 
         if($changes > 0) {
+            $trackedUsers = $redis->hgetall('apiUserTracker');
             $redis->del('playersOnline:Chat');
-            foreach($trakcedUsers AS $key => $value)
+            foreach($trackedUsers AS $key => $value)
                 $redis->lpush('playersOnline:Chat', $key);
         }
     }
