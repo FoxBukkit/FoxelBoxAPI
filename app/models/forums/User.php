@@ -18,46 +18,8 @@ class User extends Eloquent {
         return $this->_uuid;
     }
 
-    public function getRank() {
-        return RedisL4::connection()->hget('playergroups', $this->getUUID());
-    }
-
-    private static function getRankLevel($rank) {
-        return RedisL4::connection()->hget('ranklevels', $rank);
-    }
-
-    public function getLevel() {
-        return self::getRankLevel($this->getRank());
-    }
-
-    public function getName() {
-        return RedisL4::connection()->hget('playerUUIDToName', $this->getUUID());
-    }
-
-    public function getFullNickAndTag() {
-        $redis = RedisL4::connection();
-        $nick = $redis->hget('playernicks', $this->getUUID());
-        if(empty($nick))
-            $nick = $this->getName();
-        $tag = '';
-        $tagAdd = $redis->hget('playerTags', $this->getUUID());
-        if(!empty($tagAdd))
-            $tag .= $tagAdd . ' ';
-        $tagAdd = $redis->hget('playerRankTags', $this->getUUID());
-        if(!empty($tagAdd))
-            $tag .= $tagAdd;
-        else {
-            $tagAdd = $redis->hget('ranktags', $this->getRank());
-            if(!empty($tagAdd))
-                $tag .= $tagAdd;
-        }
-        return $tag . $nick;
-    }
-
-    public function hasPermission($permissions) {
-        if(in_array('foxbukkit.opchat', $permissions))
-            return $this->getLevel() >= self::getRankLevel('op');
-        return false;
+    public function getMCUser() {
+        return new MCUser($this->getUUID());
     }
 
     public function checkPassword($password) {

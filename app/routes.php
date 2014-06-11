@@ -27,5 +27,8 @@ Route::group(
         Route::post('message/poll', 'APIv1\MessageController@pollAction');
 
         Route::post('profile', 'APIv1\ProfileController@indexAction');
+
+        Route::post('player/list', 'APIv1\PlayerController@listAction');
+        Route::post('player/info', 'APIv1\PlayerController@infoAction');
     }
 );
