@@ -26,6 +26,23 @@ class MCUser {
         return RedisL4::connection()->hget('playerUUIDToName', $this->uuid);
     }
 
+    public function getFullNick() {
+        $redis = RedisL4::connection();
+        $nick = $redis->hget('playernicks', $this->uuid);
+        if(empty($nick))
+            $nick = $this->getName();
+        $tag = '';
+        $tagAdd = $redis->hget('playerRankTags', $this->uuid);
+        if(!empty($tagAdd))
+            $tag .= $tagAdd;
+        else {
+            $tagAdd = $redis->hget('ranktags', $this->getRank());
+            if(!empty($tagAdd))
+                $tag .= $tagAdd;
+        }
+        return $tag . $nick;
+    }
+
     public function getFullNickAndTag() {
         $redis = RedisL4::connection();
         $nick = $redis->hget('playernicks', $this->uuid);

@@ -13,6 +13,7 @@ class PlayerController extends APIController {
                 $list[] = array(
                     'uuid' => $uuid,
                     'name' => $user->getName(),
+                    'display_name' => $user->getFullNick(),
                 );
             }
             $ret[$server] = $list;
