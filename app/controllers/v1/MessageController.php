@@ -39,17 +39,36 @@ class MessageController extends APIController {
         $this->makeSuccess(array('time' => $maxTime, 'messages' => $messages));
     }
 
+    private static function makeUUID() {
+        $context = null;
+        uuid_create($context);
+        uuid_make($context, UUID_MAKE_V4);
+        $uuid = null;
+        uuid_export($context, UUID_FMT_STR, $uuid);
+        return trim($uuid);
+    }
+
     public function sendAction() {
         $this->requireLoggedIn();
         $redis = \RedisL4::connection();
         $uuid = $this->user->getUUID();
         $message = \Input::get('message');
-        if($message{0} == "\u0123")
-            $message = substr($message, 1);
-        $message = str_replace("\r", '', $message);
-        $message = str_replace("\n", '', $message);
-        $message = str_replace("\t", '', $message);
-        $redis->publish('foxbukkit:from_server', 'Chat|' . $uuid . '|' . $redis->hget('playerUUIDToName', $uuid) . '|' . $message);
-        $this->makeSuccess(array('ok' => true));
+
+        $msguuid = self::makeUUID();
+
+        $msgContents = json_encode(array(
+            'server' => 'Chat',
+            'from' => array(
+                'uuid' => $uuid,
+                'name' => $redis->hget('playerUUIDToName', $uuid)
+            ),
+            'timestamp' => time(),
+            'context' => $msguuid,
+            'type' => 'text',
+            'contents' => $message
+        ));
+
+        $redis->publish('foxbukkit:from_server', json_encode($msgContents));
+        $this->makeSuccess(array('ok' => true, 'context' => $msguuid));
     }
 } 
