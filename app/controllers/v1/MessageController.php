@@ -68,7 +68,7 @@ class MessageController extends APIController {
             'contents' => $message
         ));
 
-        $redis->publish('foxbukkit:from_server', json_encode($msgContents));
+        $redis->lpush('foxbukkit:from_server', json_encode($msgContents));
         $this->makeSuccess(array('ok' => true, 'context' => $msguuid));
     }
 } 
