@@ -40,12 +40,7 @@ class MessageController extends APIController {
     }
 
     private static function makeUUID() {
-        $context = null;
-        uuid_create($context);
-        uuid_make($context, UUID_MAKE_V4);
-        $uuid = null;
-        uuid_export($context, UUID_FMT_STR, $uuid);
-        return trim($uuid);
+        return trim(uuid_create(UUID_TYPE_RANDOM));
     }
 
     public function sendAction() {
