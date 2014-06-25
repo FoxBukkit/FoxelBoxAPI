@@ -51,7 +51,7 @@ class MessageController extends APIController {
 
         $msguuid = self::makeUUID();
 
-        $msgContents = json_encode(array(
+        $msgContents = array(
             'server' => 'Chat',
             'from' => array(
                 'uuid' => $uuid,
@@ -61,7 +61,7 @@ class MessageController extends APIController {
             'context' => $msguuid,
             'type' => 'text',
             'contents' => $message
-        ));
+        );
 
         $redis->lpush('foxbukkit:from_server', json_encode($msgContents));
         $this->makeSuccess(array('ok' => true, 'context' => $msguuid));
