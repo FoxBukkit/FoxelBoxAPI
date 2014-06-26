@@ -11,7 +11,10 @@ class MCUser {
     }
 
     public function getRank() {
-        return RedisL4::connection()->hget('playergroups', $this->uuid);
+        $rank = RedisL4::connection()->hget('playergroups', $this->uuid);
+        if(empty($rank))
+            return 'guest';
+        return $rank;
     }
 
     private static function getRankLevel($rank) {
