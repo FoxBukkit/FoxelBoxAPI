@@ -28,7 +28,7 @@ class SkinGetter {
             return null;
         foreach($skinData->properties AS $property)
             if($property->name == 'textures')
-                return json_decode(base64_decode($property))->textures;
+                return json_decode(base64_decode($property->value))->textures;
         return null;
     }
 
