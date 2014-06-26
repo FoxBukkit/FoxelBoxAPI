@@ -34,7 +34,7 @@ class SkinGetter {
 
     public static function getBodyTexture($uuid) {
         $skinData = self::getTextureData($uuid);
-        return self::getDataFromURL($skinData->SKIN, false);
+        return self::getDataFromURL($skinData->SKIN->url, false);
     }
 
     public static function printHead($uuid, $size = 48) {
