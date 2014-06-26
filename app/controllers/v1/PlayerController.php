@@ -16,9 +16,9 @@ class PlayerController extends APIController {
                     'display_name' => $user->getFullNick(),
                 );
             }
-            $ret[$server] = $list;
+            $ret[] = array('server' => $server, 'players' => $list);
         }
-        $this->makeSuccess($ret);
+        $this->makeSuccess(array('list' => $ret));
     }
 
     public function infoAction() {
@@ -27,11 +27,11 @@ class PlayerController extends APIController {
         if($uuid == 'myself')
             $uuid = $this->user->getUUID();
         $user = new \MCUser($uuid);
-        $this->makeSuccess(array(
-            'Pretty name' => $user->getFullNickAndTag(),
-            'Name' => $user->getName(),
-            'Rank' => $user->getRank(),
-            'Level' => $user->getLevel(),
-        ));
+        $this->makeSuccess(array('fields' => array(
+            array('title' => 'Pretty name', 'name' => 'display_name', 'value' => $user->getFullNickAndTag()),
+            array('title' => 'Name', 'name' => 'name', 'value' => $user->getName()),
+            array('title' => 'Rank', 'name' => 'rank', 'value' => $user->getRank()),
+            array('title' => 'Level', 'name' => 'level', 'value' => $user->getLevel()),
+        )));
     }
 } 
