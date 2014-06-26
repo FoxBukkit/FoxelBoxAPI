@@ -37,7 +37,7 @@ class SkinGetter {
         return self::getDataFromURL($skinData->SKIN->url, false);
     }
 
-    public static function printHead($uuid, $size = 48) {
+    public static function getHead($uuid, $size = 48) {
         $size = (int)$size;
         if($size < 8)
             $size = 8;
@@ -51,9 +51,15 @@ class SkinGetter {
         imagecopyresized($av, $im, 0, 0, 8, 8, $size, $size, 8, 8);    // Face
         imagecolortransparent($im, imagecolorat($im, 63, 0));    // Black Hat Issue
         imagecopyresized($av, $im, 0, 0, 40, 8, $size, $size, 8, 8);   // Accessories
-        header('Content-type: image/png');
+
+        ob_start();
         imagepng($av);
+        $content = ob_get_contents();
+        ob_end_clean();
+
         imagedestroy($im);
         imagedestroy($av);
+
+        return $content;
     }
 }
