@@ -9,7 +9,7 @@ class SkinController extends APIController {
         if($uuid == 'myself')
             $uuid = $this->user->getUUID();
 
-        $avatarStorage = storage_path().'/cache/avatars/head/' . $uuid . '.png';
+        $avatarStorage = storage_path().'/cache/avatars/head/'.$uuid.'.png';
 
         if(file_exists($avatarStorage) && filemtime($avatarStorage) > time() - 600) {
             header('Content-Type: image/png');
