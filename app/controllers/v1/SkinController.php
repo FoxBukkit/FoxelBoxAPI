@@ -3,6 +3,9 @@ namespace APIv1;
 
 class SkinController extends APIController {
     public function headAction($uuid) {
+        if(strtolower(substr($uuid, -4)) == '.png')
+            $uuid = substr($uuid, 0, -4);
+
         if($uuid == 'myself')
             $uuid = $this->user->getUUID();
 
