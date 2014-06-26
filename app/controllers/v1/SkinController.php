@@ -8,8 +8,7 @@ class SkinController extends APIController {
 
         $avatarStorage = storage_path().'/cache/avatars/head/' . $uuid . '.png';
 
-        $mtime = filemtime($avatarStorage);
-        if($mtime && $mtime > time() - 600) {
+        if(file_exists($avatarStorage) && filemtime($avatarStorage) > time() - 600) {
             header('Content-Type: image/png');
             readfile($avatarStorage);
             exit;
@@ -18,7 +17,7 @@ class SkinController extends APIController {
         if(empty($head))
             die('ERROR');
         file_put_contents($avatarStorage, $head);
-        
+
         header('Content-Type: image/png');
         die($head);
     }
