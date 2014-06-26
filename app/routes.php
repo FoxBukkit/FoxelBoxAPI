@@ -30,5 +30,7 @@ Route::group(
 
         Route::post('player/list', 'APIv1\PlayerController@listAction');
         Route::post('player/info', 'APIv1\PlayerController@infoAction');
+
+        Route::get('skin/head/{uuid}', 'APIv1\SkinController@headAction');
     }
 );
