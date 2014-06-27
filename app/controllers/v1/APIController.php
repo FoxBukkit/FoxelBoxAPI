@@ -12,7 +12,9 @@ class APIController extends \Controller {
         if(!\Input::has('session_id'))
             $this->makeError('Missing session_id', true);
         $this->session_data = \Input::get('session_id');
-        $session_decrypted = \Crypt::decrypt(\Input::get('session_id'));
+        $session_decrypted = \Cache::get('session_' . \Input::get('session_id'));
+        if(empty($session_decrypted))
+            $this->makeError('Invalid session', true);
         if($session_decrypted['time'] - time() > 600)
             $this->makeError('Session outdated', true);
         $this->user = \User::find($session_decrypted['user_id']);
@@ -30,8 +32,8 @@ class APIController extends \Controller {
 
         \UserTracker::addUser($this->user->getUUID());
 
-        $this->session_data = \Crypt::encrypt($data);
-
+        $this->session_data = uniqid();
+        \Cache::put('session_' . $this->session_data, $data, 10);
         return $this->session_data;
     }
 
