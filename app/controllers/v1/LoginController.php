@@ -15,6 +15,7 @@ class LoginController extends APIController {
             $this->makeError('No UUID');
 
         $this->user = $user;
+        $this->session_data = null;
         $this->generateSessionData();
         $this->makeSuccess(array('ok' => true));
     }
@@ -22,6 +23,7 @@ class LoginController extends APIController {
     public function logoutAction() {
         $this->requireLoggedIn();
         \UserTracker::removeUser($this->user->getUUID());
+        \Cache::put('session_' . $this->session_data, null, 1);
         $this->makeSuccess(array('ok' => true), false);
     }
 
