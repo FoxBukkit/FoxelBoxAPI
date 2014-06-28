@@ -30,9 +30,10 @@ class APIController extends \Controller {
             'time' => time()
         );
 
-        \UserTracker::addUser($this->user->getUUID());
+        if(empty($this->session_data))
+            $this->session_data = uniqid();
 
-        $this->session_data = uniqid();
+        \UserTracker::addUser($this->user->getUUID());
         \Cache::put('session_' . $this->session_data, $data, 10);
         return $this->session_data;
     }
