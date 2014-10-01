@@ -24,7 +24,7 @@ class MessageController extends APIController {
                     if($data->to->type == 'all' ||
                         ($data->to->type == 'player' && in_array($uuid, $data->to->filter)) ||
                         ($data->to->type == 'permission' && $this->user->getMCUser()->hasPermission($data->to->filter))) {
-                            $messages[] = $data;
+                            array_unshift($messages, $data);
                             $found = true;
                     }
                     if($data->time > $maxTime)
