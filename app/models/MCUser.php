@@ -20,7 +20,7 @@ class MCUser {
                 $this->ignoreList[$value] = true;
             }
         }
-        return $this->ignoreList[$uuid];
+        return isset($this->ignoreList[$uuid]);
     }
 
     public function getRank() {
