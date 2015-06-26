@@ -16,7 +16,7 @@ class MCUser {
         if(!$this->ignoreList) {
             $this->ignoreList = array();
             $redisList = explode(',', RedisL4::connection()->hget('ignoreList', $this->uuid));
-            for($redisList AS $value) {
+            foreach($redisList AS $value) {
                 $this->ignoreList[$value] = true;
             }
         }
