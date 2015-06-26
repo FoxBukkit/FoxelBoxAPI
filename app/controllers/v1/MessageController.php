@@ -14,6 +14,7 @@ class MessageController extends APIController {
         $waited = 0;
 
         $uuid = $this->user->getUUID();
+        $mcUser = $this->user->getMCUser();
 
         $maxTime = $since;
 
@@ -21,11 +22,15 @@ class MessageController extends APIController {
             foreach($redis->lrange('apiMessageCache', 0, -1) AS $value) {
                 $data = json_decode($value);
                 if($data->time > $since) {
-                    if($data->to->type == 'all' ||
-                        ($data->to->type == 'player' && in_array($uuid, $data->to->filter)) ||
-                        ($data->to->type == 'permission' && $this->user->getMCUser()->hasPermission($data->to->filter))) {
-                            array_unshift($messages, $data);
-                            $found = true;
+                    if(
+                        (
+                            $data->to->type == 'all' ||
+                            ($data->to->type == 'player' && in_array($uuid, $data->to->filter)) ||
+                            ($data->to->type == 'permission' && $mcUser->hasPermission($data->to->filter))
+                        ) && !$mcUser->ignores($data->from->uuid)
+                    ) {
+                        array_unshift($messages, $data);
+                        $found = true;
                     }
                     if($data->time > $maxTime)
                         $maxTime = $data->time;

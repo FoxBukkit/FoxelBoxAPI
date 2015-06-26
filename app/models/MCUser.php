@@ -2,12 +2,25 @@
 
 class MCUser {
     private $uuid;
+    private $ignoreList;
+
     public function __construct($uuid) {
         $this->uuid = $uuid;
     }
 
     public function getUUID() {
         return $this->uuid;
+    }
+
+    public function ignores($uuid) {
+        if(!$this->ignoreList) {
+            $this->ignoreList = array();
+            $redisList = explode(',', RedisL4::connection()->hget('ignoreList', $this->uuid));
+            for($redisList AS $value) {
+                $this->ignoreList[$value] = true;
+            }
+        }
+        return $this->ignoreList[$uuid];
     }
 
     public function getRank() {
