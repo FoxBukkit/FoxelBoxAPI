@@ -27,7 +27,7 @@ class MessageController extends APIController {
                             $data->to->type == 'all' ||
                             ($data->to->type == 'player' && in_array($uuid, $data->to->filter)) ||
                             ($data->to->type == 'permission' && $mcUser->hasPermission($data->to->filter))
-                        ) && !$mcUser->ignores($data->from->uuid)
+                        ) && (!$data->from || !$mcUser->ignores($data->from->uuid))
                     ) {
                         array_unshift($messages, $data);
                         $found = true;
