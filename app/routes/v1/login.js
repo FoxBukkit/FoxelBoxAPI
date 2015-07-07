@@ -1,39 +1,70 @@
 'use strict';
 
 var Joi = require('joi');
+var phpSerialize = require('php-unserialize');
+var crypto = require('crypto');
+var bcrypt = require('bcrypt');
+var Boom = require('boom');
+var _ = require('lodash');
+var JWT   = require('jsonwebtoken');
 
+var config = require('../../config');
 var sequelize = require('../../models/forum');
 
 var ForumUser = sequelize.User;
 
-var phpSerialize = require('php-unserialize');
-
-var crypto = require('crypto');
-var bcrypt = require('bcrypt');
-var Boom = require('boom');
-
-var _ = require('lodash');
-
-function hash(method, str) {
+function hash (method, str) {
 	return crypto.createHash('sha1').write(str).digest('hex');
 }
 
-function xenForoHashStep(hashFunc, str) {
+function xenForoHashStep (hashFunc, str) {
 	if (hashFunc === 'sha256') {
 		return hash('sha256', str);
 	}
 	return hash('sha1', str);
 }
 
-function xenForoHash(hashFunc, salt, str) {
+function xenForoHash (hashFunc, salt, str) {
 	return xenForoHashStep(hashFunc, xenForoHashStep(hashFunc, str) + salt);
 }
 
 module.exports = [
 	{
+		path: '/v1/login/verify',
+		method: ['GET', 'POST'],
+		handler: function (request, reply) {
+			return reply({ success: true });
+		}
+	},
+	{
+		path: '/v1/login/logout',
+		method: ['GET', 'POST'],
+		config: {
+			auth: false
+		},
+		handler: function (request, reply) {
+			return reply({ success: true });
+		}
+	},
+	{
+		path: '/v1/login/refresh',
+		method: ['GET', 'POST'],
+		handler: function (request, reply) {
+				var sessionId = JWT.sign(request.session.userId, config.jsonWebTokenSecret, {
+					expiresInSeconds: 600
+				});
+
+				return {
+					success: true,
+					session_id: sessionId
+				};
+		}		
+	},
+	{
 		path: '/v1/login/auth',
 		method: 'POST',
 		config: {
+			auth: false,
 			validate: {
 				payload: {
 					username: Joi.string().required(),
@@ -41,8 +72,7 @@ module.exports = [
 				}
 			}
 		},
-		handler: function(request, reply) {
-
+		handler: function (request, reply) {
 			var username = request.payload.username;
 			var password = request.payload.password;
 
@@ -60,6 +90,9 @@ module.exports = [
 				}
 			})
 			.then(function(data) {
+				if (!data) {
+					return Boom.unauthorized('Invalid username or password');
+				}
 
 				var found = _.find(data.UserAuthenticates, function(authenticate) {
 					var authData = phpSerialize.unserialize(authenticate.data.toString());
@@ -74,12 +107,16 @@ module.exports = [
 				});
 
 				if (!found) {
-					return Boom.unauthorized('invalid password');
+					return Boom.unauthorized('Invalid username or password');
 				}
+
+				var sessionId = JWT.sign({ userId: data.user_id }, config.jsonWebTokenSecret, {
+					expiresInSeconds: 600
+				});
 
 				return {
 					success: true,
-					what: found.schemeClass
+					session_id: sessionId
 				};
 
 			}));

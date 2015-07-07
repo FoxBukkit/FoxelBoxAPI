@@ -1,4 +1,6 @@
 {
+	"port": 3000,
+	"jsonWebTokenSecret": "123456",
 	"sql": {
 		"forum": {
 			"username": "xx",

@@ -3,28 +3,41 @@
 var Hapi = require('hapi');
 // jshint: -Promise
 var Promise = require('bluebird');
+var config = require('./config');
 
 var server = new Hapi.Server();
 
 Promise.promisifyAll(server);
 
 server.connection({
-	port: process.env.PORT || 3000
+	port: config.port
 });
 
-server.ext('onPreResponse', function(request, next) {
-	if (request.response instanceof Error) {
-		var response = request.response;
-		console.error(response.stack);
+server.ext('onPreResponse', function (request, reply) {
+	var response = request.response;
+	if (response instanceof Error &&
+		(!response.output || !response.output.statusCode || response.output.statusCode === 500)) {
+		console.error(responsestack);
 	}
-	next(request.response);
+	return reply.continue();
 });
 
 server.registerAsync({
-	register: require('hapi-router'),
-	options: {
-		routes: 'app/routes/**/*.js'
-	}
+	register: require('hapi-auth-jwt2')
+}).then(function() {
+	server.auth.strategy('jwt', 'jwt', true, {
+		key: config.jsonWebTokenSecret,
+		validateFunc: function(decoded, request, callback) {
+			return callback(null, true);
+		}
+	});
+
+	return server.registerAsync({
+		register: require('hapi-router'),
+		options: {
+			routes: 'app/routes/**/*.js'
+		}
+	});
 })
 .then(function() {
 	return server.startAsync();
@@ -35,6 +48,3 @@ server.registerAsync({
 .catch(function(error)  {
 	console.error(error);
 });
-
-
-

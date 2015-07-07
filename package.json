@@ -14,12 +14,16 @@
     "bluebird": "^2.9.32",
     "boom": "^2.8.0",
     "hapi": "^8.8.0",
+    "hapi-auth-jwt2": "^4.5.0",
     "hapi-router": "^3.0.1",
+    "hoek": "^2.14.0",
     "joi": "^6.5.0",
+    "jsonwebtoken": "^5.0.2",
     "lodash": "^3.10.0",
     "mysql": "^2.7.0",
     "php-unserialize": "0.0.1",
-    "sequelize": "^3.3.2"
+    "sequelize": "^3.3.2",
+    "uuid": "^2.0.1"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
