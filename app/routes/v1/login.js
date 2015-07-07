@@ -50,13 +50,14 @@ module.exports = [
 		path: '/v1/login/refresh',
 		method: ['GET', 'POST'],
 		handler: function (request, reply) {
-				var sessionId = JWT.sign(request.session.userId, config.jsonWebTokenSecret, {
-					expiresInSeconds: 600
+				var sessionId = JWT.sign(request.session.userId, config.jsonWebToken.secret, {
+					expiresInSeconds: config.jsonWebToken.expiresIn
 				});
 
 				return {
 					success: true,
-					session_id: sessionId
+					expiresIn: config.jsonWebToken.expiresIn,
+					sessionId: sessionId
 				};
 		}		
 	},
@@ -110,13 +111,14 @@ module.exports = [
 					return Boom.unauthorized('Invalid username or password');
 				}
 
-				var sessionId = JWT.sign({ userId: data.user_id }, config.jsonWebTokenSecret, {
-					expiresInSeconds: 600
+				var sessionId = JWT.sign({ userId: data.user_id }, config.jsonWebToken.secret, {
+					expiresInSeconds: config.jsonWebToken.expiresIn
 				});
 
 				return {
 					success: true,
-					session_id: sessionId
+					expiresIn: config.jsonWebToken.expiresIn,
+					sessionId: sessionId
 				};
 
 			}));
