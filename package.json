@@ -12,6 +12,7 @@
   "dependencies": {
     "bcrypt": "^0.8.3",
     "bluebird": "^2.9.32",
+    "boom": "^2.8.0",
     "hapi": "^8.8.0",
     "hapi-router": "^3.0.1",
     "joi": "^6.5.0",
