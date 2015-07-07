@@ -31,8 +31,7 @@ class User extends Eloquent {
             case 'XenForo_Authentication_wBB3':
                 return $authData['hash'] === sha1($authData['salt'] . sha1($authData['salt'] . sha1($password)));
             case 'XenForo_Authentication_Core12':
-                $passwordHash = new XenForo_PasswordHash(XENFORO_PASSWORD_ITERATIONS, false);
-                return $passwordHash->CheckPassword($password, $authData['hash']);
+                return crypt($password, $authData['hash']) === $authData['hash'];
             case 'XenForo_Authentication_Core':
                 $hashFunc = $authData['hashFunc'];
                 return $this->__xenForoHash($hashFunc, ($this->__xenForoHash($hashFunc, $password) . $authData['salt'])) === $hashFunc['hash'];

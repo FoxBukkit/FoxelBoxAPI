@@ -21,6 +21,7 @@ Route::group(
     function() {
         Route::post('login/auth', 'APIv1\LoginController@authAction');
         Route::post('login/logout', 'APIv1\LoginController@logoutAction');
+        Route::get('login/logout', 'APIv1\LoginController@logoutAction');
         Route::post('login/verify', 'APIv1\LoginController@verifyAction');
 
         Route::post('message/send', 'APIv1\MessageController@sendAction');
@@ -29,6 +30,7 @@ Route::group(
         Route::post('profile', 'APIv1\ProfileController@indexAction');
 
         Route::post('player/list', 'APIv1\PlayerController@listAction');
+        Route::get('player/list', 'APIv1\PlayerController@listAction');
         Route::post('player/info', 'APIv1\PlayerController@infoAction');
 
         Route::get('skin/head/{uuid}', 'APIv1\SkinController@headAction');

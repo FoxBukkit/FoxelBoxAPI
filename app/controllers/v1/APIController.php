@@ -9,10 +9,14 @@ class APIController extends \Controller {
     protected $session_data;
 
     protected function requireLoggedIn() {
-        if(!\Input::has('session_id'))
+        if(\Input::has('session_id'))
+            $session_id = \Input::get('session_id');
+        else
+            $session_id = \Request::header('Authorization');
+        if(empty($session_id))
             $this->makeError('Missing session_id', true);
-        $this->session_data = \Input::get('session_id');
-        $session_decrypted = \Cache::get('session_' . \Input::get('session_id'));
+        $this->session_data = $session_id;
+        $session_decrypted = \Cache::get('session_' . $session_id);
         if(empty($session_decrypted))
             $this->makeError('Invalid session', true);
         if($session_decrypted['time'] - time() > 600)
