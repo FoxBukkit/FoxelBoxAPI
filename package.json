@@ -10,8 +10,22 @@
   "author": "Doridian",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^0.8.3",
+    "bluebird": "^2.9.32",
     "hapi": "^8.8.0",
+    "hapi-router": "^3.0.1",
+    "joi": "^6.5.0",
+    "lodash": "^3.10.0",
     "mysql": "^2.7.0",
+    "php-unserialize": "0.0.1",
+    "rekuire": "^0.1.9",
     "sequelize": "^3.3.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-jscs": "^1.6.0",
+    "gulp-jshint": "^1.11.2",
+    "gulp-load-plugins": "^1.0.0-rc.1",
+    "jshint-stylish": "^2.0.1"
   }
 }

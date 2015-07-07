@@ -16,5 +16,8 @@
 	"undef": true,
 	"withstmt": false,
 	"predef": ["rekuire"],
-	"maxparams": 4
+	"maxparams": 4,
+	"globals": {
+		"Promise": true
+	}
 }
