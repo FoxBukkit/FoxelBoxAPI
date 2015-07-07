@@ -50,7 +50,7 @@ module.exports = [
 		path: '/v1/login/refresh',
 		method: ['GET', 'POST'],
 		handler: function (request, reply) {
-				var sessionId = JWT.sign(request.session.userId, config.jsonWebToken.secret, {
+				var sessionId = JWT.sign(request.session, config.jsonWebToken.secret, {
 					expiresInSeconds: config.jsonWebToken.expiresIn
 				});
 
