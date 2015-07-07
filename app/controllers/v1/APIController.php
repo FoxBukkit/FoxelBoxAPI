@@ -43,7 +43,8 @@ class APIController extends \Controller {
     }
 
     protected function makeSuccess($result, $add_session_id = true) {
-        die(json_encode(array_merge($result, array('success' => true, 'session_id' => $add_session_id ? $this->generateSessionData() : ''))));
+        $sid = $add_session_id ? $this->generateSessionData() : '';
+        die(json_encode(array_merge($result, array('success' => true, 'session_id' => $sid, 'sessionId' => $sid))));
     }
 
     protected function makeError($message, $retry = false) {
