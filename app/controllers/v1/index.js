@@ -1,4 +1,4 @@
-function registerFile(method, file, route) {
+function registerFile(file, route) {
 	var controller = require('./' + file);
 	controller.actions.forEach(function(action) {
 		route({
@@ -10,5 +10,5 @@ function registerFile(method, file, route) {
 }
 
 module.exports = function(route) {
-	registerFile('login');
+	registerFile('login', route);
 };
