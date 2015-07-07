@@ -1,7 +1,5 @@
 'use strict';
 
-global.rekuire = require('rekuire');
-
 var Hapi = require('hapi');
 // jshint: -Promise
 var Promise = require('bluebird');

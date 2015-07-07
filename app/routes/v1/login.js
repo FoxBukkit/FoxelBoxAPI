@@ -2,7 +2,7 @@
 
 var Joi = require('joi');
 
-var sequelize = rekuire('app/models/forum');
+var sequelize = require('../../models/forum');
 
 var ForumUser = sequelize.User;
 

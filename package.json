@@ -19,7 +19,6 @@
     "lodash": "^3.10.0",
     "mysql": "^2.7.0",
     "php-unserialize": "0.0.1",
-    "rekuire": "^0.1.9",
     "sequelize": "^3.3.2"
   },
   "devDependencies": {
