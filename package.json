@@ -1,0 +1,16 @@
+{
+  "name": "foxelboxapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Doridian",
+  "license": "ISC",
+  "dependencies": {
+    "hapi": "^8.8.0",
+    "sequelize": "^3.3.2"
+  }
+}
