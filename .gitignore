@@ -2,3 +2,4 @@ node_modules
 npm-debug.log
 /app/config/production.json
 /app/config/development.json
+/test.sh

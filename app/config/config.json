@@ -6,11 +6,19 @@
 	},
 	"sql": {
 		"forum": {
-			"username": "xx",
-			"password": "xx",
-			"database": "xx",
-			"host": "xx",
+			"username": "root",
+			"password": "",
+			"database": "foxelbox",
+			"host": "127.0.0.1",
 			"dialect": "mysql"
+		}
+	},
+	"redis": {
+		"host": "127.0.0.1",
+		"port": 6379,
+		"options": {
+			"auth_pass": null,
+			"database": 0
 		}
 	}
 }
