@@ -98,18 +98,19 @@ Player.prototype.hasPermission = function (permission) {
 	return Promise.resolve(false);
 };
 
-/*
-public function ignores($uuid) {
-        if(!$this->ignoreList) {
-            $this->ignoreList = array();
-            $redisList = explode(',', RedisL4::connection()->hget('ignoreList', $this->uuid));
-            foreach($redisList AS $value) {
-                $this->ignoreList[$value] = true;
-            }
-        }
-        return isset($this->ignoreList[$uuid]);
-    }
-    */
+Player.prototype.ignores = function (uuid) {
+	if (!this.ignoreList) {
+		var ignoreList = [];
+		return redis.hgetAsync('ignoreList', this.uuid).bind(this).then(function (ignores) {
+			ignores.split(',').forEach(function (ignore) {
+				ignoreList[ignore] = true;
+			});
+			this.ignoreList = ignoreList;
+			return this.ignores(uuid);
+		});
+	}
+	return Promise.resolve(this.ignoreList[uuid]);
+};
 
 Player.get = function (uuid) {
 	return new Player(uuid);
