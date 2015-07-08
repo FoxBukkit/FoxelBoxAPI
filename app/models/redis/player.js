@@ -106,9 +106,11 @@ Player.prototype.ignores = function (uuid) {
 	if (!this.ignoreList) {
 		var ignoreList = [];
 		return redis.hgetAsync('ignoreList', this.uuid).bind(this).then(function (ignores) {
-			ignores.split(',').forEach(function (ignore) {
-				ignoreList[ignore] = true;
-			});
+			if (ignores) {
+				ignores.split(',').forEach(function (ignore) {
+					ignoreList[ignore] = true;
+				});
+			}
 			this.ignoreList = ignoreList;
 			return this.ignores(uuid);
 		});
