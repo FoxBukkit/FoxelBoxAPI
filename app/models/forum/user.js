@@ -27,16 +27,15 @@ module.exports = function(sequelize, DataTypes) {
 						return this;
 					}
 
-					var self = this;
 					return this.getUserFieldValues({
 						where: {
 							fieldId: 'minecraft_uuid'
 						}
-					}).then(function (fieldValues) {
-						return fieldValues[0] ? fieldValues[0].fieldValue : null;
-					}).then(function (uuid) {
-						self.uuid = uuid;
-						return self;
+					})
+					.bind(this)
+					.then(function (fieldValues) {
+						this.uuid = fieldValues[0] ? fieldValues[0].fieldValue : null;
+						return this;
 					});
 				}
 			}
