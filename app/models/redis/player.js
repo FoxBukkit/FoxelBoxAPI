@@ -102,6 +102,15 @@ Player.prototype.hasPermission = function (permission) {
 	return Promise.resolve(false);
 };
 
+Player.prototype.hasAnyPermission = function (permissions) {
+	var self = this;
+	return Promise.reduce(permissions, function (hasAny, permission) {
+		return self.hasPermission(permission).then(function (hasCurrent) {
+			return hasAny || hasCurrent;
+		});
+	});
+};
+
 Player.prototype.ignores = function (uuid) {
 	if (!this.ignoreList) {
 		var ignoreList = [];

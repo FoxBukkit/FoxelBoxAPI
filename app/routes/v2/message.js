@@ -19,7 +19,7 @@ function tryPollMessages(since, longPoll, player) {
             case 'player':
                 return message.to.filter.indexOf(player.uuid) >= 0;
             case 'permission':
-                return player.hasPermission(message.to.filter[0]);
+                return player.hasAnyPermission(message.to.filter);
             default:
                 return false;
         }
