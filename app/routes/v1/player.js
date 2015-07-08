@@ -25,25 +25,6 @@ module.exports = [
     }
 ];
 /*
-    public function listAction() {
-        $this->requireLoggedIn();
-        $ret = array();
-        $redis = \RedisL4::connection();
-        foreach($redis->lrange('activeServers', 0, -1) AS $server) {
-            $list = array();
-            foreach($redis->lrange('playersOnline:' . $server, 0, -1) AS $uuid) {
-                $user = new \MCUser($uuid);
-                $list[] = array(
-                    'uuid' => $uuid,
-                    'name' => $user->getName(),
-                    'display_name' => $user->getFullNick(),
-                );
-            }
-            $ret[] = array('server' => $server, 'players' => $list);
-        }
-        $this->makeSuccess(array('list' => $ret));
-    }
-
     public function infoAction() {
         $this->requireLoggedIn();
         $uuid = \Input::get('uuid');
