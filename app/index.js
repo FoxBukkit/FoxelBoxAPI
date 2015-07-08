@@ -17,7 +17,7 @@ server.ext('onPreResponse', function (request, reply) {
 	var response = request.response;
 	if (response instanceof Error &&
 		(!response.output || !response.output.statusCode || response.output.statusCode === 500)) {
-		console.error(responsestack);
+		console.error(response.stack);
 	}
 	return reply.continue();
 });
