@@ -67,7 +67,7 @@ module.exports = [
                 });
             }).then(function (props) {
                 var allProps = [];
-                for(var key in props) {
+                for (var key in props) {
                     allProps.push({ name: key, value: props[key], title: playerPropNames[key] });
                 }
                 return {

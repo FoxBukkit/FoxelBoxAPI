@@ -86,6 +86,18 @@ Player.prototype.getDisplayName = function () {
 	});
 };
 
+Player.prototype.hasPermission = function (permission) {
+	if(permission === 'foxbukkit.opchat') {
+		return Promise.all([
+			this.getLevel(),
+			Player.getRankLevel('trainee')
+		]).spread(function (myLevel, opLevel) {
+			return myLevel >= opLevel;
+		});
+	}
+	return Promise.resolve(false);
+};
+
 /*
 public function ignores($uuid) {
         if(!$this->ignoreList) {
