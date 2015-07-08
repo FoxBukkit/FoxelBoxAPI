@@ -92,7 +92,7 @@ module.exports = [
 			})
 			.then(function(data) {
 				if (!data) {
-					return Boom.unauthorized('Invalid username or password');
+					throw 'Invalid username or password';
 				}
 
 				var found = _.find(data.UserAuthenticates, function(authenticate) {
@@ -108,7 +108,13 @@ module.exports = [
 				});
 
 				if (!found) {
-					return Boom.unauthorized('Invalid username or password');
+					throw 'Invalid username or password';
+				}
+
+				return data.extendWithUUID();
+			}).then(function(data) {
+				if (!data.uuid) {
+					throw 'Your forums account has no /mclink\'ed account';
 				}
 
 				var sessionId = JWT.sign({ userId: data.user_id }, config.jsonWebToken.secret, {
@@ -121,6 +127,11 @@ module.exports = [
 					sessionId: sessionId
 				};
 
+			}).catch(function(err) {
+				if(typeof err == 'string') {
+					return Boom.unauthorized(err);
+				}
+				throw err;
 			}));
 		}
 	}

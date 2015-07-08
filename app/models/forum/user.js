@@ -16,6 +16,28 @@ module.exports = function(sequelize, DataTypes) {
 					this.hasMany(models.UserAuthenticate, {
 						foreignKey: 'user_id'
 					});
+					this.hasMany(models.UserFieldValue, {
+						foreignKey: 'user_id'
+					});
+				}
+			},
+			instanceMethods: {
+				extendWithUUID: function() {
+					if (this.uuid !== undefined) {
+						return this;
+					}
+
+					var self = this;
+					return this.getUserFieldValues({
+						where: {
+							fieldId: 'minecraft_uuid'
+						}
+					}).then(function (fieldValues) {
+						return fieldValues[0] ? fieldValues[0].fieldValue : null;
+					}).then(function (uuid) {
+						self.uuid = uuid;
+						return self;
+					});
 				}
 			}
 		}
