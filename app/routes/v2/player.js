@@ -78,18 +78,3 @@ module.exports = [
         }
     },
 ];
-/*
-    public function infoAction() {
-        $this->requireLoggedIn();
-        $uuid = \Input::get('uuid');
-        if($uuid == 'myself')
-            $uuid = $this->user->getUUID();
-        $user = new \MCUser($uuid);
-        $this->makeSuccess(array('fields' => array(
-            array('title' => 'Pretty name', 'name' => 'display_name', 'value' => $user->getFullNickAndTag()),
-            array('title' => 'Name', 'name' => 'name', 'value' => $user->getName()),
-            array('title' => 'Rank', 'name' => 'rank', 'value' => $user->getRank()),
-            array('title' => 'Level', 'name' => 'level', 'value' => $user->getLevel()),
-        )));
-    }
-*/
