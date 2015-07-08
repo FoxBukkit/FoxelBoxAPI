@@ -30,25 +30,15 @@ function xenForoHash (hashFunc, salt, str) {
 
 module.exports = [
 	{
-		path: '/v1/login/verify',
-		method: ['GET', 'POST'],
+		path: '/v2/login/verify',
+		method: 'GET',
 		handler: function (request, reply) {
 			return reply({ success: true });
 		}
 	},
 	{
-		path: '/v1/login/logout',
-		method: ['GET', 'POST'],
-		config: {
-			auth: false
-		},
-		handler: function (request, reply) {
-			return reply({ success: true });
-		}
-	},
-	{
-		path: '/v1/login/refresh',
-		method: ['GET', 'POST'],
+		path: '/v2/login/refresh',
+		method: 'GET',
 		handler: function (request, reply) {
 				var sessionId = JWT.sign(request.session, config.jsonWebToken.secret, {
 					expiresInSeconds: config.jsonWebToken.expiresIn
@@ -56,13 +46,15 @@ module.exports = [
 
 				return {
 					success: true,
-					expiresIn: config.jsonWebToken.expiresIn,
-					sessionId: sessionId
+					result: {
+						expiresIn: config.jsonWebToken.expiresIn,
+						sessionId: sessionId
+					}
 				};
 		}		
 	},
 	{
-		path: '/v1/login/auth',
+		path: '/v2/login',
 		method: 'POST',
 		config: {
 			auth: false,
@@ -123,8 +115,10 @@ module.exports = [
 
 				return {
 					success: true,
-					expiresIn: config.jsonWebToken.expiresIn,
-					sessionId: sessionId
+					result: {
+						expiresIn: config.jsonWebToken.expiresIn,
+						sessionId: sessionId
+					}
 				};
 
 			}).catch(function(err) {

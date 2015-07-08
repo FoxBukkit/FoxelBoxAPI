@@ -45,9 +45,22 @@ Player.prototype.getLevel = function () {
 	if (this.rankLevel) {
 		return Promise.resolve(this.rankLevel);
 	}
-	return Player.getRankLevel(this.getRank()).then(function (level) {
+	return Player.getRankLevel(this.getRank()).bind(this).then(function (level) {
 		this.rankLevel = level;
 		return level;
+	});
+};
+
+Player.prototype.getFullName = function () {
+	if(this.fullName) {
+		return Promise.resolve(this.fullName);
+	}
+	return Promise.props({
+		displayName: this.getDisplayName(),
+		tag: redis.hgetAsync('playerRankTags', this.uuid)
+	}).bind(this).then(function (result) {
+		this.fullName = (result.tag || '') + result.displayName;
+		return this.fullName;
 	});
 };
 
@@ -62,13 +75,14 @@ Player.prototype.getDisplayName = function () {
 		rankTag: this.getRank().then(function (rank) {
 			return redis.hgetAsync('ranktags', rank);
 		})
-	}).then(function(result) {
+	}).bind(this).then(function (result) {
 		var nick = (result.nick && result.nick !== '') ? result.nick : result.name;
 		var tag = (result.playerRankTag && result.playerRankTag !== '') ? result.playerRankTag : result.rankTag;
 		if (!tag) {
 			return nick;
 		}
-		return tag + nick;
+		this.displayName = tag + nick;
+		return this.displayName;
 	});
 };
 
