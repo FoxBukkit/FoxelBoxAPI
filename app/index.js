@@ -28,7 +28,7 @@ server.registerAsync({
 	server.auth.strategy('jwt', 'jwt', true, {
 		key: config.jsonWebToken.secret,
 		validateFunc: function(decoded, request, callback) {
-			return callback(null, !!decoded.userId);
+			return callback(null, decoded.userId && decoded.uuid);
 		}
 	});
 

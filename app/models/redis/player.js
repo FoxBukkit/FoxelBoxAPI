@@ -57,9 +57,13 @@ Player.prototype.getFullName = function () {
 	}
 	return Promise.props({
 		displayName: this.getDisplayName(),
-		tag: redis.hgetAsync('playerRankTags', this.uuid)
+		tag: redis.hgetAsync('playerTags', this.uuid)
 	}).bind(this).then(function (result) {
-		this.fullName = (result.tag || '') + result.displayName;
+		if(result.tag) {
+			this.fullName = result.tag + ' ' + result.displayName;
+		} else {
+			this.fullName = result.displayName;
+		}
 		return this.fullName;
 	});
 };

@@ -3,7 +3,8 @@
 var Promise = require('bluebird');
 var Joi = require('joi');
 
-var Player = require('../../models/redis/player.js');
+var Player = require('../../models/redis/player');
+var Server = require('../../models/redis/server');
 var sequelize = require('../../models/forum');
 
 var ForumUser = sequelize.User;
@@ -22,11 +23,16 @@ module.exports = [
         path: '/v2/player',
         method: 'GET',
         handler: function (request, reply) {
-            reply(Player.getAllOnline().map(function (player) {
+            reply(Server.getAll().map(function (server) {
                 return Promise.props({
-                    uuid: player.getUUID(),
-                    name: player.getName(),
-                    displayName: player.getDisplayName()
+                    server: server.getName(),
+                    players: Player.getOnline(server).map(function (player) {
+                        return Promise.props({
+                            uuid: player.getUUID(),
+                            name: player.getName(),
+                            displayName: player.getDisplayName()
+                        })
+                    })
                 });
             }).then(function (result) {
                 return {
@@ -40,31 +46,22 @@ module.exports = [
         path: '/v2/player/{uuid}',
         method: 'GET',
         handler: function (request, reply) {
-            var uuidParam = request.params.uuid;
-            var uuidPromise;
-            if (uuidParam === 'myself') {
-                uuidPromise = ForumUser.findOne({ user_id: request.auth.credentials.userId }).then(function (user) {
-                    return user.extendWithUUID();
-                }).then(function (user) {
-                    return user.uuid;
-                });
-            } else {
-                uuidPromise = Promise.resolve(uuidParam);
+            var uuid = request.params.uuid;
+            if (uuid === 'myself') {
+                uuid = request.auth.credentials.uuid;
             }
 
             var allProps = [];
 
-            reply(uuidPromise.then(function (uuid) {
-                return Player.get(uuid);
-            }).then(function (player) {
-                return Promise.props({
-                    uuid: player.getUUID(),
-                    name: player.getName(),
-                    displayName: player.getDisplayName(),
-                    fullName: player.getFullName(),
-                    rank: player.getRank(),
-                    level: player.getLevel()
-                });
+            var player = Player.get(uuid);
+
+            reply(Promise.props({
+                uuid: player.getUUID(),
+                name: player.getName(),
+                displayName: player.getDisplayName(),
+                fullName: player.getFullName(),
+                rank: player.getRank(),
+                level: player.getLevel()
             }).then(function (props) {
                 var allProps = [];
                 for (var key in props) {
@@ -76,5 +73,5 @@ module.exports = [
                 };
             }));
         }
-    },
+    }
 ];

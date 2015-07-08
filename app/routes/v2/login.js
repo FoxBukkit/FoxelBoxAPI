@@ -40,7 +40,7 @@ module.exports = [
 		path: '/v2/login/refresh',
 		method: 'GET',
 		handler: function (request, reply) {
-				var sessionId = JWT.sign(request.session, config.jsonWebToken.secret, {
+				var sessionId = JWT.sign(request.auth.credentials, config.jsonWebToken.secret, {
 					expiresInSeconds: config.jsonWebToken.expiresIn
 				});
 
@@ -109,7 +109,7 @@ module.exports = [
 					throw 'Your forums account has no /mclink\'ed account';
 				}
 
-				var sessionId = JWT.sign({ userId: data.user_id }, config.jsonWebToken.secret, {
+				var sessionId = JWT.sign({ userId: data.user_id, uuid: data.uuid }, config.jsonWebToken.secret, {
 					expiresInSeconds: config.jsonWebToken.expiresIn
 				});
 
