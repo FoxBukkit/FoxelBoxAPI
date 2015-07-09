@@ -54,23 +54,26 @@ module.exports = [
 
 			var player = Player.get(uuid);
 
-			reply(Promise.props({
-				uuid: player.getUUID(),
-				name: player.getName(),
-				displayName: player.getDisplayName(),
-				fullName: player.getFullName(),
-				rank: player.getRank(),
-				level: player.getLevel()
-			}).then(function (props) {
-				var allProps = [];
-				for (var key in props) {
-					allProps.push({ name: key, value: props[key], title: playerPropNames[key] });
-				}
-				return {
-					success: true,
-					result: allProps
-				};
-			}));
+			reply(
+				Promise.props({
+					uuid: player.getUUID(),
+					name: player.getName(),
+					displayName: player.getDisplayName(),
+					fullName: player.getFullName(),
+					rank: player.getRank(),
+					level: player.getLevel()
+				})
+				.then(function (props) {
+					var allProps = [];
+					for (var key in props) {
+						allProps.push({ name: key, value: props[key], title: playerPropNames[key] });
+					}
+					return {
+						success: true,
+						result: allProps
+					};
+				})
+			);
 		}
 	}
 ];

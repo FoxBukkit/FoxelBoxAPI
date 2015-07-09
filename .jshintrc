@@ -1,4 +1,5 @@
 {
+	"strict": true,
 	"node": true,
 	"bitwise": true,
 	"boss": false,
