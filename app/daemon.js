@@ -40,13 +40,13 @@ function removeOldMessages () {
 }
 
 function refreshUserTracker () {
-	console.log('[REFRESHUSER]', 'start');
+	console.log('[RENEWUSER]', 'start');
 	UserTracker.refresh()
 	.catch(function (error) {
-		console.error('[REFRESHUSER]', error, error.stack);
+		console.error('[RENEWUSER]', error, error.stack);
 	})
 	.then(function () {
-		console.log('[REFRESHUSER]', 'done');
+		console.log('[RENEWUSER]', 'done');
 	})
 	.delay(30000)
 	.then(refreshUserTracker);
