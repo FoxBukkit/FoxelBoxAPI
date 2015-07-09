@@ -37,7 +37,7 @@ module.exports.add = function (player, expiresAt) {
 	});
 };
 
-module.exports.del = function (player) {
+module.exports.remove = function (player) {
 	if (player.uuid) {
 		player = player.uuid;
 	}
