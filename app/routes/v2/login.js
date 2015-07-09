@@ -1,5 +1,6 @@
 'use strict';
 
+var Promise = require('bluebird');
 var Joi = require('joi');
 var phpSerialize = require('php-unserialize');
 var crypto = require('crypto');
