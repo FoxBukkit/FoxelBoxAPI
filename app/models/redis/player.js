@@ -144,12 +144,13 @@ Player.get = function (uuid) {
 };
 
 Player.getOnline = function (server) {
-	return redis.lrangeAsync('playersOnline:' + server.getName(), 0, -1)
+	return redis.smembersAsync('playersOnline:' + server.getName())
 	.map(Player.get);
 };
 
 Player.getAllOnline = function () {
-	return Server.getAll().reduce(function (all, server) {
+	return Server.getAll()
+	.reduce(function (all, server) {
 		return Player.getOnline(server)
 		.then(function (players) {
 			return all.concat(players);

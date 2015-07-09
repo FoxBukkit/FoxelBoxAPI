@@ -70,8 +70,17 @@ module.exports = [
 		}
 	},
 	{
+		path: '/v2/login/logout',
+		method: 'POST',
+		handler: function (request, reply) {
+			return reply({
+				success: true
+			});
+		}
+	}
+	{
 		path: '/v2/login/refresh',
-		method: 'GET',
+		method: 'POST',
 		handler: function (request, reply) {
 				reply(ForumUser.findOne({
 					where: {

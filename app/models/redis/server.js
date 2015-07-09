@@ -10,7 +10,7 @@ Server.prototype.getName = function () {
 };
 
 Server.getAll = function () {
-	return redis.lrangeAsync('activeServers', 0, -1)
+	return redis.zrangeAsync('activeServers', 0, -1)
 	.map(function(server) {
 		return new Server(server);
 	});
