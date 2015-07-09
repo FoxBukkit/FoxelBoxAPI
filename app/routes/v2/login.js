@@ -55,7 +55,7 @@ function makeUserSession (user) {
 			expiresInSeconds: expiresInSeconds + 1
 		});
 
-		return UserTracker.add(data.uuid, expiresAt).thenResolve({
+		return UserTracker.add(data.uuid, expiresAt).thenReturn({
 			success: true,
 			result: {
 				expiresAt: expiresAt,
@@ -80,7 +80,7 @@ module.exports = [
 		method: 'POST',
 		handler: function (request, reply) {
 			return reply(UserTracker.remove(request.auth.credentials.uuid)
-				.thenResolve({
+				.thenReturn({
 				success: true
 			}));
 		}
