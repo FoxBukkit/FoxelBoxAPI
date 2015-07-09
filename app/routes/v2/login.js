@@ -136,6 +136,8 @@ module.exports = [
 				if (!found) {
 					throw 'Invalid username or password';
 				}
+
+				return data;
 			})
 			.then(makeUserSession)
 			.catch(function(err) {
