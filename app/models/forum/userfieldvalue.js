@@ -15,11 +15,7 @@ module.exports = function(sequelize, DataTypes) {
 		}
 	}, {
 		tableName: 'xf_user_field_value',
-		timestamps: false,
-		classMethods: {
-			associate: function(models) {
-			}
-		}
+		timestamps: false
 	});
 	UserFieldValue.removeAttribute('id');
 	return UserFieldValue;

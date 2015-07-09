@@ -33,7 +33,9 @@ module.exports = [
 		path: '/v2/login/verify',
 		method: 'GET',
 		handler: function (request, reply) {
-			return reply({ success: true });
+			return reply({
+				success: true
+			});
 		}
 	},
 	{
@@ -109,7 +111,10 @@ module.exports = [
 					throw 'Your forums account has no /mclink\'ed account';
 				}
 
-				var sessionId = JWT.sign({ userId: data.user_id, uuid: data.uuid }, config.jsonWebToken.secret, {
+				var sessionId = JWT.sign({
+					userId: data.user_id,
+					uuid: data.uuid
+				}, config.jsonWebToken.secret, {
 					expiresInSeconds: config.jsonWebToken.expiresIn
 				});
 

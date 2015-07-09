@@ -19,23 +19,28 @@ module.exports = [
 		path: '/v2/player',
 		method: 'GET',
 		handler: function (request, reply) {
-			reply(Server.getAll().map(function (server) {
-				return Promise.props({
-					server: server.getName(),
-					players: Player.getOnline(server).map(function (player) {
-						return Promise.props({
-							uuid: player.getUUID(),
-							name: player.getName(),
-							displayName: player.getDisplayName()
-						});
-					})
-				});
-			}).then(function (result) {
-				return {
-					success: true,
-					result: result
-				};
-			}));
+			reply(
+				Server.getAll()
+				.map(function (server) {
+					return Promise.props({
+						server: server.getName(),
+						players: Player.getOnline(server)
+						.map(function (player) {
+							return Promise.props({
+								uuid: player.getUUID(),
+								name: player.getName(),
+								displayName: player.getDisplayName()
+							});
+						})
+					});
+				})
+				.then(function (result) {
+					return {
+						success: true,
+						result: result
+					};
+				})
+			);
 		}
 	},
 	{

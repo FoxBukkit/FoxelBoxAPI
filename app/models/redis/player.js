@@ -16,7 +16,9 @@ Player.prototype.getName  = function () {
 	if (this.name) {
 		return Promise.resolve(this.name);
 	}
-	return redis.hgetAsync('playerUUIDToName', this.uuid).bind(this).then(function (name) {
+	return redis.hgetAsync('playerUUIDToName', this.uuid)
+	.bind(this)
+	.then(function (name) {
 		this.name = name;
 		return name;
 	});
@@ -26,7 +28,9 @@ Player.prototype.getRank = function () {
 	if (this.rank) {
 		return Promise.resolve(this.rank);
 	}
-	return redis.hgetAsync('playergroups', this.uuid).bind(this).then(function (rank) {
+	return redis.hgetAsync('playergroups', this.uuid)
+	.bind(this)
+	.then(function (rank) {
 		rank = rank || 'guest';
 		this.rank = rank;
 		return rank;
@@ -34,14 +38,17 @@ Player.prototype.getRank = function () {
 };
 
 Player.getRankLevel = function (rank) {
-	return redis.hgetAsync('ranklevels', rank).then(parseInt);
+	return redis.hgetAsync('ranklevels', rank)
+	.then(parseInt);
 };
 
 Player.prototype.getLevel = function () {
 	if (this.rankLevel) {
 		return Promise.resolve(this.rankLevel);
 	}
-	return Player.getRankLevel(this.getRank()).bind(this).then(function (level) {
+	return Player.getRankLevel(this.getRank())
+	.bind(this)
+	.then(function (level) {
 		this.rankLevel = level;
 		return level;
 	});
@@ -54,7 +61,9 @@ Player.prototype.getFullName = function () {
 	return Promise.props({
 		displayName: this.getDisplayName(),
 		tag: redis.hgetAsync('playerTags', this.uuid)
-	}).bind(this).then(function (result) {
+	})
+	.bind(this)
+	.then(function (result) {
 		if (result.tag) {
 			this.fullName = result.tag + ' ' + result.displayName;
 		} else {
@@ -69,15 +78,18 @@ Player.prototype.getDisplayName = function () {
 		return Promise.resolve(this.displayName);
 	}
 	return Promise.props({
-		nick: redis.hgetAsync('playernicks', this.uuid),
-		name: this.getName(),
-		playerRankTag: redis.hgetAsync('playerRankTags', this.uuid),
-		rankTag: this.getRank().then(function (rank) {
-			return redis.hgetAsync('ranktags', rank);
-		})
-	}).bind(this).then(function (result) {
-		var nick = result.nick ? result.nick : result.name;
-		var tag = result.playerRankTag ? result.playerRankTag : result.rankTag;
+		nick:			redis.hgetAsync('playernicks', this.uuid),
+		name:			this.getName(),
+		playerRankTag:	redis.hgetAsync('playerRankTags', this.uuid),
+		rankTag:		this.getRank()
+						.then(function (rank) {
+							return redis.hgetAsync('ranktags', rank);
+						})
+	})
+	.bind(this)
+	.then(function (result) {
+		var nick = result.nick || result.name;
+		var tag = result.playerRankTag || result.rankTag;
 		if (!tag) {
 			return nick;
 		}
@@ -91,7 +103,8 @@ Player.prototype.hasPermission = function (permission) {
 		return Promise.all([
 			this.getLevel(),
 			Player.getRankLevel('trainee')
-		]).spread(function (myLevel, opLevel) {
+		])
+		.spread(function (myLevel, opLevel) {
 			return myLevel >= opLevel;
 		});
 	}
@@ -101,7 +114,8 @@ Player.prototype.hasPermission = function (permission) {
 Player.prototype.hasAnyPermission = function (permissions) {
 	var self = this;
 	return Promise.reduce(permissions, function (hasAny, permission) {
-		return self.hasPermission(permission).then(function (hasCurrent) {
+		return self.hasPermission(permission)
+		.then(function (hasCurrent) {
 			return hasAny || hasCurrent;
 		});
 	});
@@ -110,7 +124,9 @@ Player.prototype.hasAnyPermission = function (permissions) {
 Player.prototype.ignores = function (uuid) {
 	if (!this.ignoreList) {
 		var ignoreList = [];
-		return redis.hgetAsync('ignoreList', this.uuid).bind(this).then(function (ignores) {
+		return redis.hgetAsync('ignoreList', this.uuid)
+		.bind(this)
+		.then(function (ignores) {
 			if (ignores) {
 				ignores.split(',').forEach(function (ignore) {
 					ignoreList[ignore] = true;
@@ -128,12 +144,14 @@ Player.get = function (uuid) {
 };
 
 Player.getOnline = function (server) {
-	return redis.lrangeAsync('playersOnline:' + server.getName(), 0, -1).map(Player.get);
+	return redis.lrangeAsync('playersOnline:' + server.getName(), 0, -1)
+	.map(Player.get);
 };
 
 Player.getAllOnline = function () {
 	return Server.getAll().reduce(function (all, server) {
-		return Player.getOnline(server).then(function (players) {
+		return Player.getOnline(server)
+		.then(function (players) {
 			return all.concat(players);
 		});
 	}, []);

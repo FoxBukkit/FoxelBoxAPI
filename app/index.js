@@ -24,7 +24,8 @@ server.ext('onPreResponse', function (request, reply) {
 
 server.registerAsync({
 	register: require('hapi-auth-jwt2')
-}).then(function() {
+})
+.then(function() {
 	server.auth.strategy('jwt', 'jwt', true, {
 		key: config.jsonWebToken.secret,
 		validateFunc: function(decoded, request, callback) {

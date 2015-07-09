@@ -12,11 +12,7 @@ module.exports = function(sequelize, DataTypes) {
 		data: DataTypes.BLOB('MEDIUM')
 	}, {
 		tableName: 'xf_user_authenticate',
-		timestamps: false,
-		classMethods: {
-			associate: function(models) {
-			}
-		}
+		timestamps: false
 	});
 	UserAuthenticate.removeAttribute('id');
 	return UserAuthenticate;
