@@ -10,9 +10,12 @@ var _ = require('lodash');
 var JWT   = require('jsonwebtoken');
 
 var config = require('../../config');
+var util = require('../../util');
 var sequelize = require('../../models/forum');
 
 var ForumUser = sequelize.User;
+
+var UserTracker = require('../../models/redis/usertracker');
 
 function hash (method, str) {
 	return crypto.createHash('sha1').write(str).digest('hex');
@@ -42,20 +45,23 @@ function makeUserSession (user) {
 			throw 'Your forums account has no /mclink\'ed account';
 		}
 
+		var expiresInSeconds = config.jsonWebToken.expiresIn;
+		var expiresAt = util.getUnixTime() + expiresInSeconds;
+
 		var sessionId = JWT.sign({
 			userId: data.user_id,
 			uuid: data.uuid
 		}, config.jsonWebToken.secret, {
-			expiresInSeconds: config.jsonWebToken.expiresIn
+			expiresInSeconds: expiresInSeconds + 1
 		});
 
-		return {
+		return UserTracker.add(data.uuid, expiresAt).thenResolve({
 			success: true,
 			result: {
-				expiresIn: config.jsonWebToken.expiresIn,
+				expiresAt: expiresAt,
 				sessionId: sessionId
 			}
-		};
+		});
 	});
 }
 
@@ -73,7 +79,8 @@ module.exports = [
 		path: '/v2/login/logout',
 		method: 'POST',
 		handler: function (request, reply) {
-			return reply({
+			return reply(UserTracker.remove(request.auth.credentials.uuid)
+				.thenResolve({
 				success: true
 			});
 		}

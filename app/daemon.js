@@ -1,6 +1,8 @@
 'use strict';
 
 var redis = require('./redis');
+var util = require('./util');
+var UserTracker = require('./models/redis/usertracker');
 
 function trySubscribe() {
 	var subscribeRedis = redis.create();
@@ -16,7 +18,7 @@ function trySubscribe() {
 }
 
 function removeOldMessages () {
-	var minimalTime = Math.floor(Date.now() / 1000) - 60;
+	var minimalTime = util.getUnixTime() - 60;
 	redis.lrangeAsync('apiMessageCache', 50, -1)
 	.filter(function (entry) {
 		return JSON.parse(entry).timestamp < minimalTime;
@@ -31,5 +33,12 @@ function removeOldMessages () {
 	.then(removeOldMessages);
 }
 
+function refreshUserTracker () {
+	UserTracker.refresh()
+	.delay(30000)
+	.then(refreshUserTracker);
+}
+
 trySubscribe();
 removeOldMessages();
+refreshUserTracker();

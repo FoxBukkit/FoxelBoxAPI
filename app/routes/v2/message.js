@@ -4,6 +4,7 @@ var Promise = require('bluebird');
 var Joi = require('joi');
 var uuid = require('uuid');
 
+var util = require('../../util');
 var redis = require('../../redis');
 var Player = require('../../models/redis/player');
 
@@ -82,7 +83,7 @@ module.exports = [
 							uuid: playerUuid,
 							name: playerName
 						},
-						timestamp: Math.floor(Date.now() / 1000),
+						timestamp: util.getUnixTime(),
 						context: context,
 						type: 'text',
 						contents: message
