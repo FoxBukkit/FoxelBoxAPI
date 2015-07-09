@@ -12,7 +12,7 @@ module.exports.refresh = function () {
 		return redis.keysAsync(PLAYER_KEYS + '*');
 	})
 	.each(function (key) {
-		return redis.saddAsync(newKey, key);
+		return redis.saddAsync(newKey, key.substr(PLAYER_KEYS.length));
 	})
 	.then(function (keys) {
 		if (keys.length > 0) {
