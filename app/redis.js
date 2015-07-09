@@ -11,13 +11,13 @@ Promise.promisifyAll(redis);
  * @return {Redis} [description]
  */
 function create () {
-    var client = redis.createClient(
-    	config.redis.port,
-    	config.redis.host,
-    	config.redis.options
-    );
-    client.select(config.redis.options.database || 0);
-    return client;
+	var client = redis.createClient(
+		config.redis.port,
+		config.redis.host,
+		config.redis.options
+	);
+	client.select(config.redis.options.database || 0);
+	return client;
 }
 
 // Create and return a new "default" client.

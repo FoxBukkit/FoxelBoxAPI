@@ -43,7 +43,7 @@ server.registerAsync({
 	return server.startAsync();
 })
 .then(function() {
-    console.log('Server running at:', server.info.uri);
+	console.log('Server running at:', server.info.uri);
 })
 .catch(function(error)  {
 	console.error(error);

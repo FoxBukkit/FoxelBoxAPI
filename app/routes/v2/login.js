@@ -51,7 +51,7 @@ module.exports = [
 						sessionId: sessionId
 					}
 				};
-		}		
+		}
 	},
 	{
 		path: '/v2/login',
@@ -122,7 +122,7 @@ module.exports = [
 				};
 
 			}).catch(function(err) {
-				if(typeof err == 'string') {
+				if (typeof err === 'string') {
 					return Boom.unauthorized(err);
 				}
 				throw err;

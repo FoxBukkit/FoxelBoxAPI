@@ -27,18 +27,14 @@ Player.prototype.getRank = function () {
 		return Promise.resolve(this.rank);
 	}
 	return redis.hgetAsync('playergroups', this.uuid).bind(this).then(function (rank) {
-		if (!rank) {
-			rank = 'guest';
-		}
+		rank = rank || 'guest';
 		this.rank = rank;
 		return rank;
 	});
 };
 
 Player.getRankLevel = function (rank) {
-	return redis.hgetAsync('ranklevels', rank).then(function (level) {
-		return parseInt(level);
-	});
+	return redis.hgetAsync('ranklevels', rank).then(parseInt);
 };
 
 Player.prototype.getLevel = function () {
@@ -52,14 +48,14 @@ Player.prototype.getLevel = function () {
 };
 
 Player.prototype.getFullName = function () {
-	if(this.fullName) {
+	if (this.fullName) {
 		return Promise.resolve(this.fullName);
 	}
 	return Promise.props({
 		displayName: this.getDisplayName(),
 		tag: redis.hgetAsync('playerTags', this.uuid)
 	}).bind(this).then(function (result) {
-		if(result.tag) {
+		if (result.tag) {
 			this.fullName = result.tag + ' ' + result.displayName;
 		} else {
 			this.fullName = result.displayName;
@@ -69,7 +65,7 @@ Player.prototype.getFullName = function () {
 };
 
 Player.prototype.getDisplayName = function () {
-	if(this.displayName) {
+	if (this.displayName) {
 		return Promise.resolve(this.displayName);
 	}
 	return Promise.props({
@@ -80,8 +76,8 @@ Player.prototype.getDisplayName = function () {
 			return redis.hgetAsync('ranktags', rank);
 		})
 	}).bind(this).then(function (result) {
-		var nick = (result.nick && result.nick !== '') ? result.nick : result.name;
-		var tag = (result.playerRankTag && result.playerRankTag !== '') ? result.playerRankTag : result.rankTag;
+		var nick = result.nick ? result.nick : result.name;
+		var tag = result.playerRankTag ? result.playerRankTag : result.rankTag;
 		if (!tag) {
 			return nick;
 		}
@@ -91,7 +87,7 @@ Player.prototype.getDisplayName = function () {
 };
 
 Player.prototype.hasPermission = function (permission) {
-	if(permission === 'foxbukkit.opchat') {
+	if (permission === 'foxbukkit.opchat') {
 		return Promise.all([
 			this.getLevel(),
 			Player.getRankLevel('trainee')
@@ -132,20 +128,15 @@ Player.get = function (uuid) {
 };
 
 Player.getOnline = function (server) {
-	return redis.lrangeAsync('playersOnline:' + server.getName(), 0, -1).map(function(uuid) { 
-		return Player.get(uuid);
-	});
+	return redis.lrangeAsync('playersOnline:' + server.getName(), 0, -1).map(Player.get);
 };
 
 Player.getAllOnline = function () {
-	var allPlayers = [];
-	return Server.getAll().each(function (server) {
+	return Server.getAll().reduce(function (all, server) {
 		return Player.getOnline(server).then(function (players) {
-			allPlayers = allPlayers.concat(players);
+			return all.concat(players);
 		});
-	}).then(function () {
-		return allPlayers;
-	});
+	}, []);
 };
 
 module.exports = Player;
