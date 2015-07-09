@@ -5,19 +5,22 @@ var util = require('./util');
 var UserTracker = require('./models/redis/usertracker');
 
 function trySubscribe() {
+	console.log('[SUBSCRIBE]', 'start');
 	var subscribeRedis = redis.create();
 	subscribeRedis.on('message', function (channel, message) {
 		redis.lpushAsync('apiMessageCache', message).catch(function (error) {
-			console.error(error, error.stack);
+			console.error('[SUBSCRIBE]', error, error.stack);
 		});
 	});
-	subscribeRedis.on('error', function () {
+	subscribeRedis.on('error', function (error) {
+		console.error('[SUBSCRIBE]', error, error.stack);
 		setTimeout(trySubscribe, 1000);
 	});
 	subscribeRedis.subscribe('foxbukkit:to_server');
 }
 
 function removeOldMessages () {
+	console.log('[REMOVEOLD]', 'start');
 	var minimalTime = util.getUnixTime() - 60;
 	redis.lrangeAsync('apiMessageCache', 50, -1)
 	.filter(function (entry) {
@@ -27,14 +30,24 @@ function removeOldMessages () {
 		return redis.lremAsync('apiMessageCache', 1, entry);
 	})
 	.catch(function (error) {
-		console.error(error, error.stack);
+		console.error('[REMOVEOLD]', error, error.stack);
+	})
+	.then(function () {
+		console.log('[REMOVEOLD]', 'done');
 	})
 	.delay(30000)
 	.then(removeOldMessages);
 }
 
 function refreshUserTracker () {
+	console.log('[REFRESHUSER]', 'start');
 	UserTracker.refresh()
+	.catch(function (error) {
+		console.error('[REFRESHUSER]', error, error.stack);
+	})
+	.then(function () {
+		console.log('[REFRESHUSER]', 'done');
+	})
 	.delay(30000)
 	.then(refreshUserTracker);
 }
