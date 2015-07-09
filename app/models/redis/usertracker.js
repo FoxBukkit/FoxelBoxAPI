@@ -30,7 +30,7 @@ module.exports.add = function (player, expiresAt) {
 
 	return redis.setAsync(PLAYER_KEYS + player, true)
 	.then(function () {
-		return redis.expireAtAsync(PLAYER_KEYS + player, expiresAt);
+		return redis.expireatAsync(PLAYER_KEYS + player, expiresAt);
 	})
 	.then(function () {
 		return redis.saddAsync(ONLINE_KEY, player);
