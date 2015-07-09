@@ -82,9 +82,9 @@ module.exports = [
 			return reply(UserTracker.remove(request.auth.credentials.uuid)
 				.thenResolve({
 				success: true
-			});
+			}));
 		}
-	}
+	},
 	{
 		path: '/v2/login/refresh',
 		method: 'POST',

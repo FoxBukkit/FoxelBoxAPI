@@ -20,7 +20,7 @@ module.exports.refresh = function () {
 		} else {
 			return redis.delAsync(newKey, ONLINE_KEY);
 		}
-	})
+	});
 };
 
 module.exports.add = function (player, expiresAt) {
