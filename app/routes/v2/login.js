@@ -28,6 +28,36 @@ function xenForoHash (hashFunc, salt, str) {
 	return xenForoHashStep(hashFunc, xenForoHashStep(hashFunc, str) + salt);
 }
 
+function makeUserSession (user) {
+	return Promise.resolve(user).then(function (data) {
+		if (!data) {
+			throw 'Invalid username or password';
+		}
+
+		return data.extendWithUUID();
+	}).
+	then(function (data) {
+		if (!data.uuid) {
+			throw 'Your forums account has no /mclink\'ed account';
+		}
+
+		var sessionId = JWT.sign({
+			userId: data.user_id,
+			uuid: data.uuid
+		}, config.jsonWebToken.secret, {
+			expiresInSeconds: config.jsonWebToken.expiresIn
+		});
+
+		return {
+			success: true,
+			result: {
+				expiresIn: config.jsonWebToken.expiresIn,
+				sessionId: sessionId
+			}
+		};
+	});
+}
+
 module.exports = [
 	{
 		path: '/v2/login/verify',
@@ -42,17 +72,18 @@ module.exports = [
 		path: '/v2/login/refresh',
 		method: 'GET',
 		handler: function (request, reply) {
-				var sessionId = JWT.sign(request.auth.credentials, config.jsonWebToken.secret, {
-					expiresInSeconds: config.jsonWebToken.expiresIn
-				});
-
-				return {
-					success: true,
-					result: {
-						expiresIn: config.jsonWebToken.expiresIn,
-						sessionId: sessionId
+				reply(ForumUser.findOne({
+					where: {
+						user_id: request.auth.credentials.userId
 					}
-				};
+				})
+				.then(makeUserSession)
+				.catch(function(err) {
+					if (typeof err === 'string') {
+						return Boom.unauthorized(err);
+					}
+					throw err;
+				}));
 		}
 	},
 	{
@@ -104,29 +135,9 @@ module.exports = [
 				if (!found) {
 					throw 'Invalid username or password';
 				}
-
-				return data.extendWithUUID();
-			}).then(function(data) {
-				if (!data.uuid) {
-					throw 'Your forums account has no /mclink\'ed account';
-				}
-
-				var sessionId = JWT.sign({
-					userId: data.user_id,
-					uuid: data.uuid
-				}, config.jsonWebToken.secret, {
-					expiresInSeconds: config.jsonWebToken.expiresIn
-				});
-
-				return {
-					success: true,
-					result: {
-						expiresIn: config.jsonWebToken.expiresIn,
-						sessionId: sessionId
-					}
-				};
-
-			}).catch(function(err) {
+			})
+			.then(makeUserSession)
+			.catch(function(err) {
 				if (typeof err === 'string') {
 					return Boom.unauthorized(err);
 				}
