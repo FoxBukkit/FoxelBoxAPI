@@ -38,6 +38,9 @@ Player.prototype.getRank = function () {
 };
 
 Player.getRankLevel = function (rank) {
+	if (rank && rank.then) {
+		return rank.then(Player.getRankLevel);
+	}
 	return redis.hgetAsync('ranklevels', rank)
 	.then(parseInt);
 };
@@ -118,7 +121,7 @@ Player.prototype.hasAnyPermission = function (permissions) {
 		.then(function (hasCurrent) {
 			return hasAny || hasCurrent;
 		});
-	});
+	}, false);
 };
 
 Player.prototype.ignores = function (uuid) {
