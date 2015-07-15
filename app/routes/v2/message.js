@@ -4,6 +4,7 @@ var Promise = require('bluebird');
 var Joi = require('joi');
 var uuid = require('uuid');
 
+var config = require('../../config');
 var util = require('../../util');
 var redis = require('../../redis');
 var Player = require('../../models/redis/player');
