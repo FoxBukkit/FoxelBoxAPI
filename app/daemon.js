@@ -1,22 +1,24 @@
 'use strict';
 
+var zmq = require('zmq');
 var redis = require('./redis');
+var config = require('./config');
 var util = require('./util');
 var UserTracker = require('./models/redis/usertracker');
 
-function trySubscribe() {
+function trySubscribe () {
 	console.log('[SUBSCRIBE]', 'start');
-	var subscribeRedis = redis.create();
-	subscribeRedis.on('message', function (channel, message) {
+
+	var zmqSocket = zmq.socket('sub');
+	util.loadZMQConfig(config.zeromq.brokerToServer, zmqSocket);
+
+	zmqSocket.on('message', function (topic, message) {
 		redis.lpushAsync('apiMessageCache', message).catch(function (error) {
 			console.error('[SUBSCRIBE]', error, error.stack);
 		});
 	});
-	subscribeRedis.on('error', function (error) {
-		console.error('[SUBSCRIBE]', error, error.stack);
-		setTimeout(trySubscribe, 1000);
-	});
-	subscribeRedis.subscribe('foxbukkit:to_server');
+
+	zmqSocket.subscribe('CMO');
 }
 
 function removeOldMessages () {

@@ -8,6 +8,10 @@ var util = require('../../util');
 var redis = require('../../redis');
 var Player = require('../../models/redis/player');
 
+var zmq = require('zmq');
+var zmqSocket = zmq.socket('push');
+util.loadZMQConfig(config.zeromq.serverToBroker, zmqSocket);
+
 function tryPollMessages(since, longPoll, player) {
 	return redis.lrangeAsync('apiMessageCache', 0, -1)
 	.map(JSON.parse)
@@ -77,7 +81,7 @@ module.exports = [
 			reply(
 				player.getName()
 				.then(function (playerName) {
-					return redis.lpushAsync('foxbukkit:from_server', JSON.stringify({
+					zmqSocket.send(JSON.stringify({
 						server: 'Chat',
 						from: {
 							uuid: playerUuid,

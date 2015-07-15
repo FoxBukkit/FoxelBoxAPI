@@ -24,7 +24,8 @@
     "php-unserialize": "0.0.1",
     "redis": "^0.12.1",
     "sequelize": "^3.3.2",
-    "uuid": "^2.0.1"
+    "uuid": "^2.0.1",
+    "zmq": "^2.12.0"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
