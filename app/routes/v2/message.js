@@ -7,6 +7,7 @@ var uuid = require('uuid');
 var config = require('../../config');
 var util = require('../../util');
 var redis = require('../../redis');
+var proto = require('../../proto');
 var Player = require('../../models/redis/player');
 
 var zmq = require('zmq');
@@ -82,15 +83,13 @@ module.exports = [
 			reply(
 				player.getName()
 				.then(function (playerName) {
-					zmqSocket.send(JSON.stringify({
+					zmqSocket.send(proto.ChatMessageIn({
 						server: 'Chat',
-						from: {
-							uuid: playerUuid,
-							name: playerName
-						},
+						from_uuid: playerUuid,
+						from_name: playerName,
 						timestamp: util.getUnixTime(),
 						context: context,
-						type: 'text',
+						type: proto.MessageType.TEXT,
 						contents: message
 					}));
 				})
