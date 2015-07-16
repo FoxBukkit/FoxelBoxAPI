@@ -1,3 +1,4 @@
 var fs = require('fs');
-var Proto = require('node-protobuf');
-module.exports = new Proto('messages.desc');
+var ProtoBuf = require('protobufjs');
+module.exports = ProtoBuf.loadProtoFile('messages.proto').build('com.foxelbox.chatproto');
+

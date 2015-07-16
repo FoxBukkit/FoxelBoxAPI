@@ -16,7 +16,7 @@ function trySubscribe () {
 	zmqSocket.on('message', function (topic, messageProto) {
 		var messageDecoded;
 		try {
-			messageDecoded = proto.parse(messageProto, 'com.foxelbox.chatproto.ChatMessageOut');
+			messageDecoded = proto.ChatMessageOut.decode(messageProto);
 		} catch(error) {
 			console.error('[SUBSCRIBE]', error, error.stack);
 			return;

@@ -24,6 +24,7 @@
     "lodash": "^3.10.0",
     "mysql": "^2.7.0",
     "php-unserialize": "0.0.1",
+    "protobufjs": "^4.0.0",
     "redis": "^0.12.1",
     "sequelize": "^3.3.2",
     "uuid": "^2.0.1",
