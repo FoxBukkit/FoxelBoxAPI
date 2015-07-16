@@ -38,7 +38,7 @@ function trySubscribe () {
 			type: proto.MessageTypeLookup[messageDecoded.type].toLowerCase(),
 			contents: messageDecoded.contents
 		};
-		redis.lpushAsync('apiMessageCache', message).catch(function (error) {
+		redis.lpushAsync('apiMessageCache', JSON.stringify(message)).catch(function (error) {
 			console.error('[SUBSCRIBE]', error, error.stack);
 		});
 	});
