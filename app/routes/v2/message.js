@@ -10,33 +10,54 @@ var redis = require('../../redis');
 var proto = require('../../proto');
 var Player = require('../../models/redis/player');
 
+var decodeOut = proto.ChatMessageOut.decode.bind(proto.ChatMessageOut);
+
 var zmq = require('zmq');
 var zmqSocket = zmq.socket('push');
 util.loadZMQConfig(config.zeromq.serverToBroker, zmqSocket);
 
 function tryPollMessages(since, longPoll, player) {
 	return redis.lrangeAsync('apiMessageCache', 0, -1)
-	.map(JSON.parse)
+	.map(decodeOut)
 	.filter(function (message) {
-		return message.id > since;
+		return message.id.greaterThan(since);
 	})
 	.filter(function (message) {
-		switch (message.to.type) {
-			case 'all':
+		switch (message.to_type) {
+			case proto.TargetType.ALL:
 				return true;
-			case 'player':
-				return message.to.filter.indexOf(player.uuid) >= 0;
-			case 'permission':
-				return player.hasAnyPermission(message.to.filter);
+			case proto.TargetType.PLAYER:
+				return message.to_filter.indexOf(player.uuid) >= 0;
+			case proto.TargetType.PERMISSION:
+				return player.hasAnyPermission(message.to_filter);
 			default:
 				return false;
 		}
 	})
 	.filter(function (message) {
-		return !message.from || player.ignores(message.from.uuid)
+		return !message.from_uuid || player.ignores(message.from_uuid)
 		.then(function (result) {
 			return !result;
 		});
+	})
+	.map(function (messageDecoded) {
+		return {
+			server: messageDecoded.server,
+			from: {
+				uuid: messageDecoded.from_uuid,
+				name: messageDecoded.from_name
+			},
+			to: {
+				type: proto.TargetTypeLookup[messageDecoded.to_type].toLowerCase(),
+				filter: messageDecoded.to_filter
+			},
+			id: messageDecoded.id.toNumber(),
+			timestamp: messageDecoded.timestamp.toNumber(),
+			context: messageDecoded.context,
+			finalizeContext: messageDecoded.finalizeContext,
+			type: proto.MessageTypeLookup[messageDecoded.type].toLowerCase(),
+			contents: messageDecoded.contents
+		};
 	})
 	.then(function (messages) {
 		if (longPoll > 0 && messages.length < 1) {
