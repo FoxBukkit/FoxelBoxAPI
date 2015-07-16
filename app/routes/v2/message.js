@@ -83,7 +83,7 @@ module.exports = [
 			reply(
 				player.getName()
 				.then(function (playerName) {
-					zmqSocket.send(proto.ChatMessageIn({
+					zmqSocket.send(new proto.ChatMessageIn({
 						server: 'Chat',
 						from_uuid: playerUuid,
 						from_name: playerName,
