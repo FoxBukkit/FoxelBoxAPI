@@ -31,7 +31,7 @@ function trySubscribe () {
 				type: proto.TargetTypeLookup[messageDecoded.to_type].toLowerCase(),
 				filter: messageDecoded.to_filter
 			},
-			id: messageDecoded.id,
+			id: messageDecoded.id.toNumber(),
 			timestamp: messageDecoded.timestamp.toNumber(),
 			context: messageDecoded.context,
 			finalizeContext: messageDecoded.finalizeContext,
