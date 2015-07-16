@@ -17,7 +17,7 @@ var zmqSocket = zmq.socket('push');
 util.loadZMQConfig(config.zeromq.serverToBroker, zmqSocket);
 
 function tryPollMessages(since, longPoll, player) {
-	return redis.lrangeAsync('apiMessageCache', 0, -1)
+	return redis.lrangeAsync(new Buffer('apiMessageCache'), 0, -1)
 	.map(decodeOut)
 	.filter(function (message) {
 		return message.id.greaterThan(since);

@@ -11,6 +11,7 @@ Promise.promisifyAll(redis);
  * @return {Redis} [description]
  */
 function create () {
+	config.redis.options.detect_buffers = true;
 	var client = redis.createClient(
 		config.redis.port,
 		config.redis.host,
