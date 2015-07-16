@@ -5,7 +5,9 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "daemon": "protoc ./app/messages.proto -o ./app/messages.desc && node app -daemon",
+    "server": "protoc ./app/messages.proto -o ./app/messages.desc && node app -server"
   },
   "author": "Doridian",
   "license": "ISC",

@@ -5,6 +5,7 @@ var redis = require('./redis');
 var config = require('./config');
 var util = require('./util');
 var UserTracker = require('./models/redis/usertracker');
+var proto = require('./proto');
 
 function trySubscribe () {
 	console.log('[SUBSCRIBE]', 'start');
@@ -12,7 +13,31 @@ function trySubscribe () {
 	var zmqSocket = zmq.socket('sub');
 	util.loadZMQConfig(config.zeromq.brokerToServer, zmqSocket);
 
-	zmqSocket.on('message', function (topic, message) {
+	zmqSocket.on('message', function (topic, messageProto) {
+		var messageDecoded;
+		try {
+			messageDecoded = proto.parse(messageProto, 'com.foxelbox.chatproto.ChatMessageOut');
+		} catch(error) {
+			console.error('[SUBSCRIBE]', error, error.stack);
+			return;
+		}
+		var message = {
+			server: messageDecoded.server,
+			from: {
+				uuid: messageDecoded.from_uuid,
+				name: messageDecoded.from_name
+			},
+			to: {
+				type: messageDecoded.to_type.toLowerCase(),
+				filter: messageDecoded.to_filter
+			},
+			id: messageDecoded.id,
+			timestamp: messageDecoded.timestamp,
+			context: messageDecoded.context,
+			finalizeContext: messageDecoded.finalizeContext,
+			type: messageDecoded.type.toLowerCase(),
+			contents: messageDecoded.contents
+		};
 		redis.lpushAsync('apiMessageCache', message).catch(function (error) {
 			console.error('[SUBSCRIBE]', error, error.stack);
 		});

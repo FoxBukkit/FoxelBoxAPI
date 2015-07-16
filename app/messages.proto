@@ -1,0 +1,39 @@
+package com.foxelbox.chatproto;
+
+enum MessageType {
+    BLANK = 0;
+    TEXT = 1;
+    KICK = 2;
+    PLAYERSTATE = 4;
+    INJECT = 5;
+}
+
+enum TargetType {
+    ALL = 0;
+    PLAYER = 1;
+    PERMISSION = 2;
+}
+
+message ChatMessageOut {
+    required int64 id = 1;
+    optional string server = 2;
+    optional string from_uuid = 3;
+    optional string from_name = 4;
+    required int64 timestamp = 5;
+    required string context = 6; // UUID
+    optional bool finalizeContext = 7 [default = true];
+    optional string contents = 8;
+    optional MessageType type = 9 [default = TEXT];
+    optional TargetType to_type = 10 [default = ALL];
+    repeated string to_filter = 11;
+}
+
+message ChatMessageIn {
+    required string server = 1;
+    required string from_uuid = 2;
+    required string from_name = 3;
+    required int64 timestamp = 4;
+    required string context = 5; // UUID
+    optional string contents = 6;
+    optional MessageType type = 7 [default = TEXT];
+}
