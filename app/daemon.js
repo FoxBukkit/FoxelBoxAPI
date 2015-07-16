@@ -13,7 +13,6 @@ function trySubscribe () {
 	util.loadZMQConfig(config.zeromq.brokerToServer, zmqSocket);
 
 	zmqSocket.on('message', function (topic, messageProto) {
-		console.log(messageProto);
 		redis.lpushAsync('apiMessageCache', messageProto).catch(function (error) {
 			console.error('[SUBSCRIBE]', error, error.stack);
 		});
