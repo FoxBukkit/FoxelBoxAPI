@@ -28,14 +28,14 @@ function trySubscribe () {
 				name: messageDecoded.from_name
 			},
 			to: {
-				type: messageDecoded.to_type.toLowerCase(),
+				type: proto.TargetTypeLookup[messageDecoded.to_type].toLowerCase(),
 				filter: messageDecoded.to_filter
 			},
 			id: messageDecoded.id,
-			timestamp: messageDecoded.timestamp,
+			timestamp: messageDecoded.timestamp.toNumber(),
 			context: messageDecoded.context,
 			finalizeContext: messageDecoded.finalizeContext,
-			type: messageDecoded.type.toLowerCase(),
+			type: proto.MessageTypeLookup[messageDecoded.type].toLowerCase(),
 			contents: messageDecoded.contents
 		};
 		redis.lpushAsync('apiMessageCache', message).catch(function (error) {
