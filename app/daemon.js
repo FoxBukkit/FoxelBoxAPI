@@ -4,6 +4,7 @@ var zmq = require('zmq');
 var redis = require('./redis');
 var config = require('./config');
 var util = require('./util');
+var proto = require('./proto');
 var UserTracker = require('./models/redis/usertracker');
 
 var forwardedMessageTypes = {};
