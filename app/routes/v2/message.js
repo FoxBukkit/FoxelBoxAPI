@@ -75,8 +75,10 @@ function tryPollMessages(since, longPoll, player) {
 		}
 		return {
 			success: true,
-			latestId: latestId.toNumber(),
-			result: messages
+			result: {
+				latestId: latestId.toNumber(),
+				messages: messages
+			}
 		};
 	});
 }
