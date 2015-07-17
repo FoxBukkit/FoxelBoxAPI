@@ -22,7 +22,7 @@ function trySubscribe () {
 		if (!forwardedMessageTypes[decoded.type]) {
 			return;
 		}
-		redis.lpushAsync('apiMessageCache', decoded.id.toString(36) + '|' + messageProto).catch(function (error) {
+		redis.zaddAsync('apiMessageCache', decoded.id, messageProto).catch(function (error) {
 			console.error('[SUBSCRIBE]', error, error.stack);
 		});
 	});

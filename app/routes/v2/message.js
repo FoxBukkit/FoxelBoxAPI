@@ -14,17 +14,14 @@ var zmq = require('zmq');
 var zmqSocket = zmq.socket('push');
 util.loadZMQConfig(config.zeromq.serverToBroker, zmqSocket);
 
+var protoDecodeChatMessageOut = proto.ChatMessageOut.decode.bind(proto.ChatMessageOut);
+
+var apiMessageCacheBuffer = new Buffer('apiMessageCache');
+var posInfinity = new Buffer('+inf');
+
 function tryPollMessages(since, longPoll, player) {
-	return redis.lrangeAsync(new Buffer('apiMessageCache'), 0, -1)
-	.filter(function (message) {
-		var iPos = message.indexOf('|');
-		var id = Long.fromString(message.substr(0, iPos), false, 36);
-		message.iPos = iPos;
-		return id.greaterThan(since);
-	})
-	.map(function (message) {
-		return proto.ChatMessageOut.decode(message.substr(message.iPos + 1));
-	})
+	return redis.zrangebyscoreAsync(apiMessageCacheBuffer, since, posInfinity)
+	.map(protoDecodeChatMessageOut)
 	.filter(function (message) {
 		var targetType = message.to ? message.to.type : proto.TargetType.ALL;
 		switch (targetType) {
