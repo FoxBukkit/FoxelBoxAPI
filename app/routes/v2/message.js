@@ -79,7 +79,7 @@ module.exports = [
 		path: '/v2/message',
 		method: 'GET',
 		handler: function (request, reply) {
-			var since = request.query.since || -1;
+			var since = parseInt(request.query.since) || -1;
 			var longPoll = request.query.longPoll ? 20 : 0;
 			var playerUuid = request.auth.credentials.uuid;
 
