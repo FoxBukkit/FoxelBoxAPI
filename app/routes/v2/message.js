@@ -20,8 +20,14 @@ var apiMessageCacheBuffer = new Buffer('apiMessageCache');
 var posInfinity = new Buffer('+inf');
 
 function tryPollMessages(since, longPoll, player) {
+	var latestId = null;
 	return redis.zrangebyscoreAsync(apiMessageCacheBuffer, since + 1, posInfinity)
 	.map(protoDecodeChatMessageOut)
+	.each(function (message) {
+		if(!latestId || message.id.greaterThan(latestId)) {
+			latestId = message.id;
+		}
+	})
 	.filter(function (message) {
 		var targetType = message.to ? message.to.type : proto.TargetType.ALL;
 		switch (targetType) {
@@ -61,7 +67,7 @@ function tryPollMessages(since, longPoll, player) {
 		};
 	})
 	.then(function (messages) {
-		if (longPoll > 0 && messages.length < 1) {
+		if (longPoll > 0 && !latestID) {
 			return Promise.delay(1000)
 			.then(function () {
 				return tryPollMessages(since, longPoll - 1, player);
@@ -69,6 +75,7 @@ function tryPollMessages(since, longPoll, player) {
 		}
 		return {
 			success: true,
+			latestId: latestId.toNumber()
 			result: messages
 		};
 	});
