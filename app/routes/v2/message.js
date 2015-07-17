@@ -52,7 +52,7 @@ function tryPollMessages(since, longPoll, player) {
 		return {
 			server: messageDecoded.server,
 			from: {
-				uuid: messageDecoded.from ? messageDecoded.from.uuid : null,
+				uuid: messageDecoded.from ? util.loadProtobufUUID(messageDecoded.from.uuid) : null,
 				name: messageDecoded.from ? messageDecoded.from.name : null
 			},
 			to: {
@@ -61,7 +61,7 @@ function tryPollMessages(since, longPoll, player) {
 			},
 			id: messageDecoded.id.toNumber(),
 			timestamp: messageDecoded.timestamp.toNumber(),
-			context: messageDecoded.context,
+			context: util.loadProtobufUUID(messageDecoded.context),
 			finalizeContext: messageDecoded.finalizeContext,
 			type: proto.MessageTypeLookup[messageDecoded.type].toLowerCase(),
 			contents: messageDecoded.contents

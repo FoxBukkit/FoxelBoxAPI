@@ -16,8 +16,13 @@ enum TargetType {
     SERVER = 4;
 }
 
+message UUID {
+    required int64 msb = 1;
+    required int64 lsb = 2;
+}
+
 message UserInfo {
-    required string uuid = 1; // UUID
+    required UUID uuid = 1;
     required string name = 2;
 }
 
@@ -31,7 +36,7 @@ message ChatMessageOut {
     optional string server = 2;
     optional UserInfo from = 3;
     required int64 timestamp = 4;
-    required string context = 5; // UUID
+    required UUID context = 5;
     optional bool finalizeContext = 6 [default = true];
     optional string contents = 7;
     optional MessageType type = 8 [default = TEXT];
@@ -42,7 +47,7 @@ message ChatMessageIn {
     required string server = 1;
     optional UserInfo from = 2;
     required int64 timestamp = 3;
-    required string context = 4; // UUID
+    required UUID context = 4;
     optional string contents = 5;
     optional MessageType type = 6 [default = TEXT];
 }
