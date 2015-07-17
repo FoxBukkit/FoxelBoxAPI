@@ -75,7 +75,7 @@ function tryPollMessages(since, longPoll, player) {
 		}
 		return {
 			success: true,
-			latestId: latestId.toNumber()
+			latestId: latestId.toNumber(),
 			result: messages
 		};
 	});
