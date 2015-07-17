@@ -106,7 +106,7 @@ module.exports = [
 		handler: function (request, reply) {
 			var playerUuid = request.auth.credentials.uuid;
 			var message = request.payload.message;
-			var context = util.writeProtobufUUIDv4();
+			var context = uuid.v4();
 			var player = Player.get(playerUuid);
 
 			reply(
@@ -115,11 +115,11 @@ module.exports = [
 					zmqSocket.send((new proto.ChatMessageIn({
 						server: 'Chat',
 						from: {
-							uuid: playerUuid,
+							uuid: util.writeProtobufUUID(playerUuid),
 							name: playerName
 						},
 						timestamp: util.getUnixTime(),
-						context: context,
+						context: util.writeProtobufUUID(context),
 						type: proto.MessageType.TEXT,
 						contents: message
 					})).encode().toBuffer());

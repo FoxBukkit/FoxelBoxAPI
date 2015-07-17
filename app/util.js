@@ -31,10 +31,9 @@ module.exports.loadProtobufUUID = function (protobufUUID) {
 	return uuid.unparse(buffer);
 }
 
-module.exports.writeProtobufUUIDv4 = function () {
+module.exports.writeProtobufUUID = function (uuidUuid) {
 	var buffer = new ArrayBuffer(16); // 16 bytes = 128 bits
-	uuid.v4(null, buffer, 0);
-	console.log(uuid.unparse(buffer));
+	uuid.parse(uuidUuid, buffer, 0);
 	var dataview = new DataView(buffer);
 	return {
 		msb: new Long(dataview.getInt32(4), dataview.getInt32(0)),
