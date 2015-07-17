@@ -23,7 +23,8 @@ function tryPollMessages(since, longPoll, player) {
 		return message.id.greaterThan(since);
 	})
 	.filter(function (message) {
-		switch (message.to_type) {
+		var targetType = message.to ? message.to.type : proto.TargetType.ALL;
+		switch (targetType) {
 			case proto.TargetType.ALL:
 				return true;
 			case proto.TargetType.PLAYER:
@@ -44,12 +45,12 @@ function tryPollMessages(since, longPoll, player) {
 		return {
 			server: messageDecoded.server,
 			from: {
-				uuid: messageDecoded.from_uuid,
-				name: messageDecoded.from_name
+				uuid: messageDecoded.from ? messageDecoded.from.uuid : null,
+				name: messageDecoded.from ? messageDecoded.from.name : null
 			},
 			to: {
-				type: proto.TargetTypeLookup[messageDecoded.to_type].toLowerCase(),
-				filter: messageDecoded.to_filter
+				type: messageDecoded.to ? proto.TargetTypeLookup[messageDecoded.to.type].toLowerCase() : 'all',
+				filter: messageDecoded.to ? messageDecoded.to.filter : []
 			},
 			id: messageDecoded.id.toNumber(),
 			timestamp: messageDecoded.timestamp.toNumber(),
