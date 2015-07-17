@@ -28,15 +28,15 @@ function tryPollMessages(since, longPoll, player) {
 			case proto.TargetType.ALL:
 				return true;
 			case proto.TargetType.PLAYER:
-				return message.to_filter.indexOf(player.uuid) >= 0;
+				return message.to.filter.indexOf(player.uuid) >= 0;
 			case proto.TargetType.PERMISSION:
-				return player.hasAnyPermission(message.to_filter);
+				return player.hasAnyPermission(message.to.filter);
 			default:
 				return false;
 		}
 	})
 	.filter(function (message) {
-		return !message.from_uuid || player.ignores(message.from_uuid)
+		return !message.from || player.ignores(message.from.uuid)
 		.then(function (result) {
 			return !result;
 		});
