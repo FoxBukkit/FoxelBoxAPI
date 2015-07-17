@@ -20,7 +20,7 @@ var apiMessageCacheBuffer = new Buffer('apiMessageCache');
 var posInfinity = new Buffer('+inf');
 
 function tryPollMessages(since, longPoll, player) {
-	return redis.zrangebyscoreAsync(apiMessageCacheBuffer, since, posInfinity)
+	return redis.zrangebyscoreAsync(apiMessageCacheBuffer, since.add(1), posInfinity)
 	.map(protoDecodeChatMessageOut)
 	.filter(function (message) {
 		var targetType = message.to ? message.to.type : proto.TargetType.ALL;
