@@ -67,7 +67,7 @@ function tryPollMessages(since, longPoll, player) {
 		};
 	})
 	.then(function (messages) {
-		if (longPoll > 0 && !latestID) {
+		if (longPoll > 0 && !latestId) {
 			return Promise.delay(1000)
 			.then(function () {
 				return tryPollMessages(since, longPoll - 1, player);
