@@ -107,8 +107,10 @@ module.exports = [
 				.then(function (playerName) {
 					zmqSocket.send((new proto.ChatMessageIn({
 						server: 'Chat',
-						from_uuid: playerUuid,
-						from_name: playerName,
+						from: {
+							uuid: playerUuid,
+							name: playerName
+						},
 						timestamp: util.getUnixTime(),
 						context: context,
 						type: proto.MessageType.TEXT,
