@@ -12,28 +12,37 @@ enum TargetType {
     ALL = 0;
     PLAYER = 1;
     PERMISSION = 2;
+    SLACKUSER = 3;
+    SERVER = 4;
+}
+
+message UserInfo {
+    required string uuid = 1; // UUID
+    required string name = 2;
+}
+
+message MessageTarget {
+    required TargetType type = 1 [default = ALL];
+    repeated string filter = 2;
 }
 
 message ChatMessageOut {
     required int64 id = 1;
     optional string server = 2;
-    optional string from_uuid = 3;
-    optional string from_name = 4;
-    required int64 timestamp = 5;
-    required string context = 6; // UUID
-    optional bool finalizeContext = 7 [default = true];
-    optional string contents = 8;
-    optional MessageType type = 9 [default = TEXT];
-    optional TargetType to_type = 10 [default = ALL];
-    repeated string to_filter = 11;
+    optional UserInfo from = 3;
+    required int64 timestamp = 4;
+    required string context = 5; // UUID
+    optional bool finalizeContext = 6 [default = true];
+    optional string contents = 7;
+    optional MessageType type = 8 [default = TEXT];
+    optional MessageTarget to = 9;
 }
 
 message ChatMessageIn {
     required string server = 1;
-    required string from_uuid = 2;
-    required string from_name = 3;
-    required int64 timestamp = 4;
-    required string context = 5; // UUID
-    optional string contents = 6;
-    optional MessageType type = 7 [default = TEXT];
+    optional UserInfo from = 2;
+    required int64 timestamp = 3;
+    required string context = 4; // UUID
+    optional string contents = 5;
+    optional MessageType type = 6 [default = TEXT];
 }
