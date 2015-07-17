@@ -76,7 +76,7 @@ function tryPollMessages(since, longPoll, player) {
 		return {
 			success: true,
 			result: {
-				latestId: latestId.toNumber(),
+				latestId: latestId ? latestId.toNumber() : -1,
 				messages: messages
 			}
 		};
