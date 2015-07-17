@@ -28,12 +28,16 @@ module.exports.loadProtobufUUID = function (protobufUUID) {
 	dataview.setInt32(8, protobufUUID.lsb.high, false);
 	dataview.setInt32(12, protobufUUID.lsb.low, false);
 
-	return uuid.unparse(new Uint8Array(buffer));
+	return uuid.unparse(buffer);
 }
 
-module.exports.writeProtobufUUID = function (uuidUuid) {
+module.exports.writeProtobufUUIDv4 = function () {
+	var buffer = new ArrayBuffer(16); // 16 bytes = 128 bits
+	uuid.v4(null, buffer, 0);
+	console.log(uuid.unparse(buffer));
+	var dataview = new DataView(buffer);
 	return {
-		msb: new Long(0),
-		lsb: new Long(0)
+		msb: new Long(dataview.getInt32(4), dataview.getInt32(0)),
+		lsb: new Long(dataview.getInt32(12), dataview.getInt32(8))
 	};
 }

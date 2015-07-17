@@ -106,7 +106,7 @@ module.exports = [
 		handler: function (request, reply) {
 			var playerUuid = request.auth.credentials.uuid;
 			var message = request.payload.message;
-			var context = uuid.v4();
+			var context = util.writeProtobufUUIDv4();
 			var player = Player.get(playerUuid);
 
 			reply(
