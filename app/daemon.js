@@ -33,12 +33,12 @@ function trySubscribe () {
 function removeOldMessages () {
 	console.log('[REMOVEOLD]', 'start');
 	var minimalTime = util.getUnixTime() - 60;
-	redis.lrangeAsync('apiMessageCache', 50, -1)
+	redis.zrevrangeAsync('apiMessageCache', 50, -1)
 	.filter(function (entry) {
 		return JSON.parse(entry).timestamp < minimalTime;
 	})
 	.each(function (entry) {
-		return redis.lremAsync('apiMessageCache', 1, entry);
+		return redis.zremAsync('apiMessageCache', entry);
 	})
 	.catch(function (error) {
 		console.error('[REMOVEOLD]', error, error.stack);
