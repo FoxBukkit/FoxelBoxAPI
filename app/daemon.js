@@ -6,6 +6,10 @@ var config = require('./config');
 var util = require('./util');
 var UserTracker = require('./models/redis/usertracker');
 
+var forwardedMessageTypes = {};
+forwardedMessageTypes[proto.MessageType.BLANK] = true;
+forwardedMessageTypes[proto.MessageType.TEXT] = true;
+
 function trySubscribe () {
 	console.log('[SUBSCRIBE]', 'start');
 
@@ -13,7 +17,11 @@ function trySubscribe () {
 	util.loadZMQConfig(config.zeromq.brokerToServer, zmqSocket);
 
 	zmqSocket.on('message', function (topic, messageProto) {
-		redis.lpushAsync('apiMessageCache', messageProto).catch(function (error) {
+		var decoded = proto.ChatMessageOut.decode(messageProto);
+		if (!forwardedMessageTypes[decoded.type]) {
+			return;
+		}
+		redis.lpushAsync('apiMessageCache', decoded.id.toString(36) + '|' + messageProto).catch(function (error) {
 			console.error('[SUBSCRIBE]', error, error.stack);
 		});
 	});

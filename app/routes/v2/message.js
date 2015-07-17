@@ -10,24 +10,20 @@ var redis = require('../../redis');
 var proto = require('../../proto');
 var Player = require('../../models/redis/player');
 
-var decodeOut = proto.ChatMessageOut.decode.bind(proto.ChatMessageOut);
-
 var zmq = require('zmq');
 var zmqSocket = zmq.socket('push');
 util.loadZMQConfig(config.zeromq.serverToBroker, zmqSocket);
 
-var forwardedMessageTypes = {};
-forwardedMessageTypes[proto.MessageType.BLANK] = true;
-forwardedMessageTypes[proto.MessageType.TEXT] = true;
-
 function tryPollMessages(since, longPoll, player) {
 	return redis.lrangeAsync(new Buffer('apiMessageCache'), 0, -1)
-	.map(decodeOut)
 	.filter(function (message) {
-		return message.id.greaterThan(since);
+		var iPos = message.indexOf('|');
+		var id = Long.fromString(message.substr(0, iPos), false, 36);
+		message.iPos = iPos;
+		return id.greaterThan(since);
 	})
-	.filter(function (message) {
-		return forwardedMessageTypes[message.type] || false;
+	.map(function (message) {
+		return proto.ChatMessageOut.decode(message.substr(message.iPos + 1));
 	})
 	.filter(function (message) {
 		var targetType = message.to ? message.to.type : proto.TargetType.ALL;
