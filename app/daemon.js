@@ -33,9 +33,9 @@ function trySubscribe () {
 function removeOldMessages () {
 	console.log('[REMOVEOLD]', 'start');
 	var minimalTime = util.getUnixTime() - 60;
-	redis.zrevrangeAsync('apiMessageCache', 50, -1)
+	redis.zrevrangeAsync(new Buffer('apiMessageCache'), 50, -1, new Buffer('withscores'))
 	.filter(function (entry) {
-		return JSON.parse(entry).timestamp < minimalTime;
+		return proto.ChatMessageOut.decode(entry).timestamp < minimalTime;
 	})
 	.each(function (entry) {
 		return redis.zremAsync('apiMessageCache', entry);
