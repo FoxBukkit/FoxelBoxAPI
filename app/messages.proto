@@ -1,11 +1,11 @@
 package com.foxelbox.chatproto;
 
 enum MessageType {
-    BLANK = 0;
-    TEXT = 1;
+    TEXT = 0;
+    BLANK = 1;
     KICK = 2;
-    PLAYERSTATE = 4;
-    INJECT = 5;
+    PLAYERSTATE = 3;
+    INJECT = 4;
 }
 
 enum TargetType {
@@ -17,8 +17,8 @@ enum TargetType {
 }
 
 message UUID {
-    required int64 msb = 1;
-    required int64 lsb = 2;
+    required sint64 msb = 1;
+    required sint64 lsb = 2;
 }
 
 message UserInfo {
