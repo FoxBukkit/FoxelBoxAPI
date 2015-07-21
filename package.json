@@ -24,6 +24,7 @@
     "lodash": "^3.10.0",
     "long": "^2.2.5",
     "mysql": "^2.7.0",
+    "needle": "^0.10.0",
     "php-unserialize": "0.0.1",
     "protobufjs": "^4.0.0",
     "redis": "^0.12.1",

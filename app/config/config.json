@@ -5,6 +5,11 @@
 		"secret": "123456",
 		"expiresIn": 600
 	},
+	"paypal": {
+		"email": "XXXXXXXXXX",
+		"sandbox": true
+	},
+	"baseUrl": "https://api.foxelbox.com",
 	"zeromq": {
 		"serverToBroker": [
 			{
