@@ -42,7 +42,11 @@ function tryPollMessages(since, longPoll, player) {
 		}
 	})
 	.filter(function (message) {
-		return !message.from || player.ignores(message.from.uuid)
+		if (!message.from) {
+			return true;
+		}
+		message.from.uuid = util.loadProtobufUUID(message.from.uuid);
+		return player.ignores(message.from.uuid)
 		.then(function (result) {
 			return !result;
 		});
@@ -51,7 +55,7 @@ function tryPollMessages(since, longPoll, player) {
 		return {
 			server: messageDecoded.server,
 			from: {
-				uuid: messageDecoded.from ? util.loadProtobufUUID(messageDecoded.from.uuid) : null,
+				uuid: messageDecoded.from ? messageDecoded.from.uuid : null,
 				name: messageDecoded.from ? messageDecoded.from.name : null
 			},
 			to: {
