@@ -71,16 +71,16 @@ module.exports = [
 			redis.existsAsync('payments:' + data.txn_id)
 			.then(function (exists) {
 				if (exists && exists > 0) {
-					throw 'PayPal: Duplicate txn: ' + data.txn_id;
+					throw new Error('PayPal: Duplicate txn: ' + data.txn_id);
 				}
 				if (data.payment_status !== 'Completed') {
-					throw 'PayPal: Status = ' + data.payment_status;
+					throw new Error('PayPal: Status = ' + data.payment_status);
 				}
 				if (data.receiver_email !== config.paypal.email) {
-					throw 'PayPal: E-Mail = ' + data.receiver_email;
+					throw new Error('PayPal: E-Mail = ' + data.receiver_email);
 				}
 				if (data.mc_currency !== 'USD') {
-					throw 'PayPal: Currency = ' + data.mc_currency;
+					throw new Error('PayPal: Currency = ' + data.mc_currency);
 				}
 				var verifyUrl = stringFormat(
 					PAYPAL_URL_VERIFY,
@@ -90,10 +90,10 @@ module.exports = [
 			})
 			.spread(function (response) {
 				if (response.statusCode !== 200) {
-					throw 'PayPal verify: code ' + response.statusCode;
+					throw new Error('PayPal verify: code ' + response.statusCode);
 				}
 				if (response.body.trim() !== 'VERIFIED') {
-					throw 'PayPal verify: body ' + response.body;
+					throw new Error('PayPal verify: body ' + response.body);
 				}
 				return redis.setAsync('payments:' + data.txn_id, JSON.stringify(data));
 			})
