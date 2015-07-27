@@ -98,13 +98,10 @@ module.exports = [
 				}
 			})
 			.then(makeUserSession)
-			.catch(function(err) {
-				if (err instanceof Boom) {
-					reply(err).header('WWW-Authenticate', 'None');
-				}
-				throw err;
-			})
 			.then(reply)
+			.catch(function(err) {
+				reply(err).header('WWW-Authenticate', 'None');
+			});
 		}
 	},
 	{
@@ -160,13 +157,10 @@ module.exports = [
 				return data;
 			})
 			.then(makeUserSession)
+			.then(reply)
 			.catch(function(err) {
-				if (err instanceof Boom) {
-					reply(err).header('WWW-Authenticate', 'None');
-				}
-				throw err;
-			})
-			.then(reply);
+				reply(err).header('WWW-Authenticate', 'None');
+			});
 		}
 	}
 ];
