@@ -35,14 +35,14 @@ function xenForoHash (hashFunc, salt, str) {
 function makeUserSession (user) {
 	return Promise.resolve(user).then(function (data) {
 		if (!data) {
-			throw 'Invalid username or password';
+			throw Boom.unauthorized('Invalid username or password');
 		}
 
 		return data.extendWithUUID();
 	})
 	.then(function (data) {
 		if (!data.uuid) {
-			throw 'Your forums account has no /mclink\'ed account';
+			throw Boom.unauthorized('Your forums account has no /mclink\'ed account');
 		}
 
 		var expiresInSeconds = config.jsonWebToken.expiresIn;
@@ -71,7 +71,7 @@ module.exports = [
 		path: '/v2/login/verify',
 		method: 'GET',
 		handler: function (request, reply) {
-			return reply({
+			reply({
 				success: true
 			});
 		}
@@ -80,7 +80,7 @@ module.exports = [
 		path: '/v2/login/logout',
 		method: 'POST',
 		handler: function (request, reply) {
-			return reply(
+			reply(
 				UserTracker.remove(request.auth.credentials.uuid)
 				.thenReturn({
 					success: true
@@ -92,20 +92,19 @@ module.exports = [
 		path: '/v2/login/refresh',
 		method: 'POST',
 		handler: function (request, reply) {
-			reply(
-				ForumUser.findOne({
-					where: {
-						user_id: request.auth.credentials.userId
-					}
-				})
-				.then(makeUserSession)
-				.catch(function(err) {
-					if (typeof err === 'string') {
-						return Boom.unauthorized(err);
-					}
-					throw err;
-				})
-			);
+			ForumUser.findOne({
+				where: {
+					user_id: request.auth.credentials.userId
+				}
+			})
+			.then(makeUserSession)
+			.catch(function(err) {
+				if (err instanceof Boom) {
+					reply(err).header('WWW-Authenticate', 'None');
+				}
+				throw err;
+			})
+			.then(reply)
 		}
 	},
 	{
@@ -124,51 +123,50 @@ module.exports = [
 			var username = request.payload.username;
 			var password = request.payload.password;
 
-			reply(
-				ForumUser.findOne({
+			ForumUser.findOne({
+				where: {
+					username: username
+				},
+				include: {
+					model: sequelize.UserAuthenticate,
 					where: {
-						username: username
-					},
-					include: {
-						model: sequelize.UserAuthenticate,
-						where: {
-							$not: {
-								scheme_class: 'XenForo_Authentication_NoPassword'
-							}
+						$not: {
+							scheme_class: 'XenForo_Authentication_NoPassword'
 						}
 					}
-				})
-				.then(function(data) {
-					if (!data) {
-						throw 'Invalid username or password';
-					}
+				}
+			})
+			.then(function(data) {
+				if (!data) {
+					throw Boom.unauthorized('Invalid username or password');
+				}
 
-					var found = _.find(data.UserAuthenticates, function(authenticate) {
-						var authData = phpSerialize.unserialize(authenticate.data.toString());
-						switch (authenticate.schemeClass) {
-							case 'XenForo_Authentication_wBB3':
-								return authData.hash === hash('sha1', authData.salt + hash('sha1', authData.salt) + hash('sha1', password));
-							case 'XenForo_Authentication_Core12':
-								return bcrypt.compareSync(password, authData.hash);
-							case 'XenForo_Authentication_Core':
-								return xenForoHash(authData.hashFunc, authData.salt, password) === authData.hash;
-						}
-					});
-
-					if (!found) {
-						throw 'Invalid username or password';
+				var found = _.find(data.UserAuthenticates, function(authenticate) {
+					var authData = phpSerialize.unserialize(authenticate.data.toString());
+					switch (authenticate.schemeClass) {
+						case 'XenForo_Authentication_wBB3':
+							return authData.hash === hash('sha1', authData.salt + hash('sha1', authData.salt) + hash('sha1', password));
+						case 'XenForo_Authentication_Core12':
+							return bcrypt.compareSync(password, authData.hash);
+						case 'XenForo_Authentication_Core':
+							return xenForoHash(authData.hashFunc, authData.salt, password) === authData.hash;
 					}
+				});
 
-					return data;
-				})
-				.then(makeUserSession)
-				.catch(function(err) {
-					if (typeof err === 'string') {
-						return Boom.unauthorized(err);
-					}
-					throw err;
-				})
-			);
+				if (!found) {
+					throw Boom.unauthorized('Invalid username or password');
+				}
+
+				return data;
+			})
+			.then(makeUserSession)
+			.catch(function(err) {
+				if (err instanceof Boom) {
+					reply(err).header('WWW-Authenticate', 'None');
+				}
+				throw err;
+			})
+			.then(reply);
 		}
 	}
 ];
