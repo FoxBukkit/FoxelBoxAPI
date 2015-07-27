@@ -17,9 +17,10 @@ var ForumUser = sequelize.User;
 
 var UserTracker = require('../../models/redis/usertracker');
 
-function BoomUnauthorized (msg) {
+function boomUnauthorized (msg) {
 	var err = Boom.unauthorized(msg);
 	err.output.headers['WWW-Authenticate'] = 'None';
+	return err;
 }
 
 function hash (method, str) {
@@ -40,14 +41,14 @@ function xenForoHash (hashFunc, salt, str) {
 function makeUserSession (user) {
 	return Promise.resolve(user).then(function (data) {
 		if (!data) {
-			throw Boom.unauthorized('Invalid username or password');
+			throw boomUnauthorized('Invalid username or password');
 		}
 
 		return data.extendWithUUID();
 	})
 	.then(function (data) {
 		if (!data.uuid) {
-			throw Boom.unauthorized('Your forums account has no /mclink\'ed account');
+			throw boomUnauthorized('Your forums account has no /mclink\'ed account');
 		}
 
 		var expiresInSeconds = config.jsonWebToken.expiresIn;
@@ -139,7 +140,7 @@ module.exports = [
 				})
 				.then(function(data) {
 					if (!data) {
-						throw BoomUnauthorized('Invalid username or password');
+						throw boomUnauthorized('Invalid username or password');
 					}
 
 					var found = _.find(data.UserAuthenticates, function(authenticate) {
@@ -155,13 +156,13 @@ module.exports = [
 					});
 
 					if (!found) {
-						throw BoomUnauthorized('Invalid username or password');
+						throw boomUnauthorized('Invalid username or password');
 					}
 
 					return data;
 				})
-				.then(makeUserSession);
-			)
+				.then(makeUserSession)
+			);
 		}
 	}
 ];

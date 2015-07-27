@@ -9,7 +9,7 @@ module.exports.getUnixTime = function () {
 
 module.exports.loadZMQConfig = function (config, socket) {
 	config.forEach(function (srv) {
-		switch(srv.mode.toLowerCase()) {
+		switch (srv.mode.toLowerCase()) {
 			case 'bind':
 				socket.bind(srv.uri);
 				break;
@@ -29,7 +29,7 @@ module.exports.loadProtobufUUID = function (protobufUUID) {
 	dataview.setInt32(12, protobufUUID.lsb.low, false);
 
 	return uuid.unparse(buffer);
-}
+};
 
 module.exports.writeProtobufUUID = function (uuidUuid) {
 	var buffer = new ArrayBuffer(16); // 16 bytes = 128 bits
@@ -39,4 +39,4 @@ module.exports.writeProtobufUUID = function (uuidUuid) {
 		msb: new Long(dataview.getInt32(4), dataview.getInt32(0)),
 		lsb: new Long(dataview.getInt32(12), dataview.getInt32(8))
 	};
-}
+};

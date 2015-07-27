@@ -2,8 +2,6 @@
 
 var Promise = require('bluebird');
 var Joi = require('joi');
-var Boom = require('boom');
-var uuid = require('uuid');
 var stringFormat = require('util').format;
 var querystring = require('querystring');
 var needle = Promise.promisifyAll(require('needle'));
@@ -12,13 +10,16 @@ var config = require('../../config');
 var redis = require('../../redis');
 
 var PAYPAL_URL_BASE;
-if(config.paypal.sandbox) {
+if (config.paypal.sandbox) {
 	PAYPAL_URL_BASE = 'https://www.sandbox.paypal.com';
 } else {
 	PAYPAL_URL_BASE = 'https://www.paypal.com';
 }
-var PAYPAL_URL_BUTTON = PAYPAL_URL_BASE + '/cgi-bin/webscr?cmd=_xclick&business=%s&lc=DE&item_name=FoxelBox%20Server&amount=%d&currency_code=USD&button_subtype=services&no_note=1&no_shipping=1&return=%s&cancel_return=%s&notify_url=%s&custom=%s';
-var PAYPAL_URL_VERIFY = PAYPAL_URL_BASE + '/cgi-bin/webscr?cmd=_notify-validate&%s';
+var PAYPAL_URL_BUTTON = PAYPAL_URL_BASE +
+                        '/cgi-bin/webscr?cmd=_xclick&business=%s&lc=DE&item_name=FoxelBox%20Server&amount=%d&currency_code=USD' +
+                        '&button_subtype=services&no_note=1&no_shipping=1&return=%s&cancel_return=%s&notify_url=%s&custom=%s';
+var PAYPAL_URL_VERIFY = PAYPAL_URL_BASE +
+                        '/cgi-bin/webscr?cmd=_notify-validate&%s';
 
 module.exports = [
 	{
@@ -78,7 +79,7 @@ module.exports = [
 				if (data.receiver_email !== config.paypal.email) {
 					throw 'PayPal: E-Mail = ' + data.receiver_email;
 				}
-				if(data.mc_currency !== 'USD') {
+				if (data.mc_currency !== 'USD') {
 					throw 'PayPal: Currency = ' + data.mc_currency;
 				}
 				var verifyUrl = stringFormat(
@@ -91,7 +92,7 @@ module.exports = [
 				if (response.statusCode !== 200) {
 					throw 'PayPal verify: code ' + response.statusCode;
 				}
-				if(response.body.trim() !== 'VERIFIED') {
+				if (response.body.trim() !== 'VERIFIED') {
 					throw 'PayPal verify: body ' + response.body;
 				}
 				return redis.setAsync('payments:' + data.txn_id, JSON.stringify(data));
@@ -114,11 +115,6 @@ module.exports = [
 			auth: false
 		},
 		handler: function (request, reply) {
-			var playerUuid = request.auth.credentials.uuid;
-			var message = request.payload.message;
-			var context = uuid.v4();
-			var player = Player.get(playerUuid);
-
 			reply({
 				success: true,
 				result: 'OK'

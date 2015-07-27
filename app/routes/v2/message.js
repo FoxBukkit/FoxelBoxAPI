@@ -24,7 +24,7 @@ function tryPollMessages(since, longPoll, player) {
 	return redis.zrangebyscoreAsync(apiMessageCacheBuffer, since + 1, posInfinity)
 	.map(protoDecodeChatMessageOut)
 	.each(function (message) {
-		if(!latestId || message.id.greaterThan(latestId)) {
+		if (!latestId || message.id.greaterThan(latestId)) {
 			latestId = message.id;
 		}
 	})
