@@ -5,7 +5,13 @@ var Hapi = require('hapi');
 var Promise = require('bluebird');
 var config = require('./config');
 
-var server = new Hapi.Server();
+var server = new Hapi.Server({
+	connections: {
+		routes: {
+			cors: true
+		}
+	}
+});
 
 Promise.promisifyAll(server);
 
