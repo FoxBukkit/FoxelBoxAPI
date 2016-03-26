@@ -34,15 +34,15 @@ function tryPollMessages(since, longPoll, player) {
 			case proto.TargetType.ALL:
 				return true;
 			case proto.TargetType.PLAYER:
-				return message.to.filter.indexOf(player.uuid) >= 0;
+				return player && message.to.filter.indexOf(player.uuid) >= 0;
 			case proto.TargetType.PERMISSION:
-				return player.hasAnyPermission(message.to.filter);
+				return player && player.hasAnyPermission(message.to.filter);
 			default:
 				return false;
 		}
 	})
 	.filter(function (message) {
-		if (!message.from) {
+		if (!message.from || !player) {
 			return true;
 		}
 		message.from.uuid = util.loadProtobufUUID(message.from.uuid);
@@ -91,12 +91,18 @@ module.exports = [
 	{
 		path: '/v2/message',
 		method: 'GET',
+		config: {
+			auth: false,
+		},
 		handler: function (request, reply) {
 			var since = parseInt(request.query.since) || -1;
 			var longPoll = request.query.longPoll ? 20 : 0;
-			var playerUuid = request.auth.credentials.uuid;
+			var player = null;
+			if (request.auth && request.auth.credentials && request.auth.credentials.uuid) {
+				player = new Player(request.auth.credentials.uuid);
+			}
 
-			reply(tryPollMessages(since, longPoll, Player.get(playerUuid)));
+			reply(tryPollMessages(since, longPoll, player));
 		}
 	},
 	{
