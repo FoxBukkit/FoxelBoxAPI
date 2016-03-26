@@ -92,7 +92,7 @@ module.exports = [
 		path: '/v2/message',
 		method: 'GET',
 		config: {
-			auth: false,
+			auth: 'optional',
 		},
 		handler: function (request, reply) {
 			var since = parseInt(request.query.since) || -1;
