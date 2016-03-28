@@ -31,6 +31,8 @@ function trySubscribe () {
 }
 
 function removeOldMessages () {
+	// TODO: Bias to weed out non-ALL messages always after 60 seconds and public chat always past 100 msgs
+
 	console.log('[REMOVEOLD]', 'start');
 	var minimalTime = util.getUnixTime() - 60;
 	redis.zrevrangeAsync(new Buffer('apiMessageCache'), 500, -1)

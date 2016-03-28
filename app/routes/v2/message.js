@@ -55,7 +55,7 @@ function tryPollMessages(since, longPoll, player) {
 		return {
 			server: messageDecoded.server,
 			from: {
-				uuid: messageDecoded.from ? messageDecoded.from.uuid : null,
+				uuid: messageDecoded.from ? util.loadProtobufUUID(messageDecoded.from.uuid) : null,
 				name: messageDecoded.from ? messageDecoded.from.name : null
 			},
 			to: {
