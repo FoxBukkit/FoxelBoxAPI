@@ -116,7 +116,7 @@ module.exports = [
 		config: {
 			validate: {
 				payload: {
-					message: Joi.string().required()
+					message: Joi.string().max(240).required()
 				}
 			}
 		},
