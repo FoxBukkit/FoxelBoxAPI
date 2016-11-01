@@ -28,7 +28,8 @@ module.exports = [
 		config: {
 			validate: {
 				query: {
-					amount: Joi.number().min(1.00).precision(2).required()
+					amount: Joi.number().min(1.00).precision(2).required(),
+					redirect: Joi.boolean().optional()
 				}
 			},
 			auth: false
@@ -44,13 +45,14 @@ module.exports = [
 				querystring.escape(config.baseUrl + '/v2/donate/notify'),
 				querystring.escape(request.query.custom || 'N/A')
 			);
-			if (!request.query.shorten) {
-				reply({
-					success: true,
-					result: url
-				});
+			if (request.query.redirect) {
+				reply.redirect(url);
 				return;
 			}
+			reply({
+				success: true,
+				result: url
+			});
 		}
 	},
 	{
